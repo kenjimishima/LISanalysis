@@ -122,22 +122,14 @@ void PeakFinder(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
   TGraphErrors *gr_calc = new TGraphErrors();
   gr->SetTitle("Mass number v.s TOF; Mass number;TOF [us];");
 
-  /*  TOFtoMass(4.86,def_tof_40Ca);
-  TOFtoMass(2.29,def_tof_40Ca);
-  MasstoTOF(12,def_tof_40Ca,0); 
-  MasstoTOF(12,def_tof_40Ca,1); 
-  */
-  
   // --- フィット実行 ---
   int ngaus = sizeof(mass) / sizeof(mass[0]);
   for (int i = 0; i < ngaus; i++) {
     double mean  = MasstoTOF(mass[i],def_tof_40Ca,0); //default 
-    //    double corr_mean  = MasstoTOF(mass[i],def_tof_40Ca,0); //corrected
     double xmin_single = mean * 0.992;
     double xmax_single = mean * 1.008;
     auto [peak_bin, peak_val] = FindMaxBinAndValueInRange(h1, xmin_single, xmax_single);
     Double_t peak_center = h1->GetXaxis()->GetBinCenter(peak_bin);
-    //   cout << mass[i]<<" "<<mean<<" "<<peak_center<<" "<< peak_val<<endl;
     TF1* fitfunc = new TF1("fitfunc", "gaus", xmin_single, xmax_single);
     fitfunc->SetParameter(0, peak_val); // amplitude
     fitfunc->SetParameter(1, peak_center);   // mean
@@ -157,7 +149,6 @@ void PeakFinder(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
     cout <<p0<<" +/-"<<ep0<<" : "<<p1<<" +/-"<<ep1<<" : "<<p2<<" +/-"<<ep2<<endl;
     gr->SetPoint(i, mass[i], p1);
     gr->SetPointError(i, 0., ep1);
-    //    gr_calc->SetPoint(i, mass[i], mean);
     gr_calc->SetPoint(i, mass[i], mean);
     gr_calc->SetPointError(i, 0., 0);
   }
@@ -169,8 +160,6 @@ void PeakFinder(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
   gr->Draw("AP");
   gr->GetYaxis()->SetRangeUser(0,8);
   gr->GetXaxis()->SetLimits(0,60);
-  //  gr_calc->Draw("Lsame");
-  //  gr_calc->SetLineColor(kRed);
   TLegend* leg = new TLegend(0.2, 0.7, 0.4, 0.85,"");
   leg->AddEntry(gr, "Peak fit", "pl");
   leg->AddEntry(gr_calc, "Calculation", "l");
@@ -181,7 +170,6 @@ void PeakFinder(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
   TF1* func = new TF1("sqrtfunc","[0]*TMath::Sqrt(x)+[1]",0., max_mass+1);
   func->SetParameter(0,1.);
   func->SetParameter(1,0.1);
-  // func->SetParameter(2,1.);
   gr->Fit("sqrtfunc","R+");
   func->SetLineColor(4);
 
@@ -224,8 +212,6 @@ void PeakFinder(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
     Double_t count_in_mass = h1->IntegralAndError(minbin, maxbin, err);
     h_outgas->SetBinContent(i + 1, count_in_mass);
     h_outgas->SetBinError(i + 1, err);
-    //    cout << i <<" mass = "<< draw_min + i  <<", Count in " << border[i] << " - " << border[i+1]
-    //       << " = " << count_in_mass << " +/- " << err << endl;
 
     TLine* l = new TLine(border[i+1], ymin, border[i+1], ymax);
     l->Draw("same");    
@@ -242,8 +228,8 @@ void PeakFinder(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
   gr_calc->Write();
   h1->Write();
   h_outgas->Write();
-  fout->Close();
 
+  fout->Close();
   //  fin->Close();
 }
 

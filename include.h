@@ -37,18 +37,10 @@ Double_t baseline_xmax = 3.00;
 Double_t def_sigma = 0.01; // [us]
 
 //TOF parameters
-// tof = (def_tof_40Ca - trigger_delay) * sqrt(mass/mass_40Ca) + trigger_delay
 Double_t trigger_delay =  0.1278; //[us]
 Double_t def_tof_40Ca = 4.09; // [us]
 
-// from .results/RUN45_Spatial_40Ca_Beamoff_slice_Y8_PeakFinder.env 
-Double_t corr_p0 =  0.0770967;
-Double_t corr_p1 =  -0.00213787;
-//Double_t corr_p0 =  0.0896249;
-//Double_t corr_p1 = -0.00323879;
-//Double_t corr_p2 =  1.9621e-05;
-
-Int_t n_rebin = 4;
+Int_t n_rebin = 4; //TOF rebin
 
 namespace {
   inline bool starts_with_hash(const std::string& s){
@@ -88,10 +80,6 @@ namespace {
 Double_t MasstoTOF(Double_t mass, Double_t tof_40Ca, const Bool_t bTOFCorr=0)
 {
   Double_t tof = (tof_40Ca - trigger_delay) * TMath::Sqrt(mass/mass_40Ca) + trigger_delay;
-  //  Double_t tof = tof_40Ca/TMath::Sqrt(mass_40Ca/mass);
-  //  Double_t tof_correction = corr_p0 + corr_p1*mass;
-  //  Double_t tof_correction = corr_p0 + corr_p1*mass + corr_p2*mass*mass; 
-  //  if(bTOFCorr) tof += tof_correction;
   cout <<"Expected value for mass "<< mass <<" is "<<tof<<" [us] "<<endl;
   return tof;
 }
@@ -102,11 +90,6 @@ Double_t TOFtoMass(Double_t tof, Double_t tof_40Ca, const Bool_t bTOFCorr=0)
   Double_t tof_nodelay = tof - trigger_delay;
   Double_t tof_40Ca_nodelay = tof_40Ca - trigger_delay;
   Double_t mass = mass_40Ca * TMath::Sq(tof_nodelay/tof_40Ca_nodelay);
-  //  Double_t tof_correction = corr_p0 + corr_p1*mass;
-  //  Double_t tof_correction = corr_p0 + corr_p1*mass + corr_p2*mass*mass; 
-  //  Double_t tof1 = tof;
-  //  if(bTOFCorr) tof1 -= tof_correction;
-  //  mass = mass_40Ca*(tof1/tof_40Ca)*(tof1/tof_40Ca);
   cout <<"Expected value for TOF at "<< tof <<" [us] is "<<mass<<endl;
   return mass;
 }

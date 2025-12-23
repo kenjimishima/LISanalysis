@@ -1,7 +1,6 @@
 #include "include.h"
 
 void GetCaGraphs(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
-//void GetCaGraphs(const char* basename = "RUN45_Spatial_44Ca_48Ca_Beamon48",
 		 const char* histname = "h2_scaled"
 		 )
 {
@@ -108,7 +107,6 @@ void GetCaGraphs(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
     }
     canv->SetGrid();
     canv->SaveAs(Form("%s%s_Y%d.png",figdir.c_str(),base.c_str(),iy));
-    // --- 格納 ---
 
     delete h1;
   }
