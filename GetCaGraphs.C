@@ -1,12 +1,30 @@
 #include "include.h"
 
-void GetCaGraphs(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
-		 const char* histname = "h2_scaled"
-		 )
+Bool_t ReadCa40PeakParam(const std::string &envpath,
+			 Double_t &A,
+			 Double_t &mean,
+			 Double_t &sigma)
 {
+  TEnv env;
+  Int_t status = env.ReadFile(envpath.c_str(), kEnvLocal);
+  if (status < 0) {
+    std::cerr << "Failed to read " << envpath << std::endl;
+    return kFALSE;
+  }
+  A     = env.GetValue("Ca40PeakTOF.A",     -1.);
+  mean  = env.GetValue("Ca40PeakTOF.Mean",  -1.);
+  sigma = env.GetValue("Ca40PeakTOF.Sigma", -1.);
+  return kTRUE;
+}
+
+//void GetCaGraphs(const char* basename = "RUN45_Spatial_40Ca_Beamoff")
+void GetCaGraphs(const char* basename = "RUN51_Spatial_40Ca_Beamoff")
+{
+  const char* histname = "h2_scaled";
   std::string base = strip_ext_and_dir(basename);
   std::string infile = base + "_Scaled.root";
   std::string indir  = "./root/scaled/";
+  std::string envdir  = "./results/";
   std::string outdir  = "./root/ca_graph/";
   std::string outpath = outdir +  base + "_CaGraph.root";
   std::string figdir  = "./outputs/ca_graph/";
@@ -20,9 +38,9 @@ void GetCaGraphs(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
   // --- X, Y ビン数と範囲を取得 ---
   Int_t nx = h2->GetNbinsX();
   Int_t ny = h2->GetNbinsY();
-  Double_t xmin = def_tof_40Ca * 0.992;
-  Double_t xmax = def_tof_40Ca * 1.008;
-  Double_t dsigma = 3.;  //Integral region of Ca peaks in sigma
+  //  Double_t xmin = def_tof_40Ca * 0.992;
+  //  Double_t xmax = def_tof_40Ca * 1.008;
+  Double_t dsigma = 4.;  //Integral region of Ca peaks in sigma
 
   //--------------------------------------------------------------
   // データ格納ベクトル
@@ -41,29 +59,23 @@ void GetCaGraphs(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
       exit(0);
     }
     h1->Rebin(n_rebin);
-
     Double_t ycenter = h2->GetYaxis()->GetBinCenter(iy);
     yval.push_back(ycenter);
-    
     TCanvas* canv = new TCanvas("c","c");
     canv->SetLogy();
     h1->Draw("eh");
     
-    auto [peak_bin, peak_val] = FindMaxBinAndValueInRange(h1, xmin, xmax);
-    Double_t peak_center = h1->GetXaxis()->GetBinCenter(peak_bin);
+  //--------------------------------------------------------------
+  // Get parameters
+  //--------------------------------------------------------------  
+    std::string envname = envdir + base + "_slice_Y" + std::to_string(iy) + "_PeakFit.env";
+    Double_t Ca40_A, Ca40_mean, Ca40_sigma;
+    ReadCa40PeakParam(envname, Ca40_A, Ca40_mean, Ca40_sigma);
+    Double_t peak_center  = Ca40_mean;
+    Double_t sigma = Ca40_sigma;
+    cout << peak_center <<" xmaxmin "<< sigma<<endl;
 
-    TF1 fG("fG", "gaus", xmin, xmax);
-    fG.SetParameters(peak_val, peak_center, def_sigma);  // 初期値: 振幅, mean, sigma
-    fG.SetParLimits(0, peak_val*0.7, peak_val*1.5);
-    fG.SetParLimits(1, xmin, xmax);
-    fG.SetParLimits(2, def_sigma*0.3, def_sigma*2.);
-    h1->Fit(&fG, "RQ");
-
-    // --- gaus fit ---
-    h1->Fit(&fG, "QNR");
-    Double_t mean  = fG.GetParameter(1);
-    Double_t sigma = fG.GetParameter(2);
-
+    
     // --- 領域定義 ---
     Double_t ca_centers[num_ca];
     Double_t ca_xmin[num_ca];
@@ -80,7 +92,7 @@ void GetCaGraphs(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
     // --- 積分と誤差 ---
     for (int i = 0; i < num_ca; ++i) {
       Double_t eff_mass = ca_mass[i];
-      eff_mass -= (ca_mass[i] - mass_40Ca)*0.014;
+      //      eff_mass -= (ca_mass[i] - mass_40Ca)*0.014;
       ca_centers[i] = MasstoTOF(eff_mass, peak_center, 0);// without TOF correction
       ca_xmin[i] = ca_centers[i] - dsigma*sigma;
       ca_xmax[i] = ca_centers[i] + dsigma*sigma;
@@ -137,7 +149,7 @@ void GetCaGraphs(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
   c2->SetGrid();
   c2->SetLogy();
   mg->Draw("APL");
-  mg->GetYaxis()->SetRangeUser(1,1e6);
+  mg->GetYaxis()->SetRangeUser(0.1,1e6);
   leg->Draw();
   //--------------------------------------------------------------
   // 保存

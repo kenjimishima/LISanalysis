@@ -38,7 +38,8 @@ Double_t def_sigma = 0.01; // [us]
 
 //TOF parameters
 Double_t trigger_delay =  0.1278; //[us]
-Double_t def_tof_40Ca = 4.09; // [us]
+//Double_t def_tof_40Ca = 4.09; // [us]
+Double_t def_tof_40Ca = 4.124; // [us]
 
 Int_t n_rebin = 4; //TOF rebin
 

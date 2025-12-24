@@ -5,11 +5,14 @@ void FitMultiGauss(TH1D* h1, const char* envbasename)
   if (!h1) { ::Error("FitMultiGauss", "Null histogram pointer."); return; }
 
   h1->Rebin(n_rebin);
-  double xmin = 3.10;
-  double xmax = 3.52;
+  //  double xmin = 3.10;
+  //  double xmax = 3.52;
   //  double xmax = 4.09;
   //  double mass[] = {24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40};
-  double mass[] = {24,25,26,27,28,29};
+  //  double mass[] = {24,25,26,27,28,29};
+  double xmin = 2.20;
+  double xmax = 2.45;
+  double mass[] = {12};
   
   int ngaus = sizeof(mass) / sizeof(mass[0]);
   
@@ -80,7 +83,8 @@ void FitMultiGauss(TH1D* h1, const char* envbasename)
 }
 
 
-void ErrorCalibration(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
+//void ErrorCalibration(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
+void ErrorCalibration(const char* basename = "RUN51_Spatial_40Ca_Beamoff",
 		      const int sliceIndex = 1,
 		      const char* histname = "h2_subtracted"
 		      )

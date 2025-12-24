@@ -81,14 +81,14 @@ TGraphErrors* MakeDiffGraph(const TGraphErrors* gr1, const TGraphErrors* gr2, co
 }
 
 
-void PeakFinder(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
-		const int sliceIndex = 1,
-		const char* histname = "h2_subtracted"
-		)
+//void PeakFinder(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
+void PeakFinder(const char* basename = "RUN51_Spatial_40Ca_Beamoff",
+		const int sliceIndex = 11)
 {
+  const char* histname = "h2_scaled";
   std::string base = strip_ext_and_dir(basename);
-  std::string indir  = "./root/baseline/";
-  std::string infile  = base + "_Baseline";
+  std::string indir  = "./root/scaled/";
+  std::string infile  = base + "_Scaled";
   std::string outdir  = "./root/peak_finder/";
   std::string outpath = outdir +  base + "_PeakFinder.root";
   std::string envbasename = base + "_slice_Y" + std::to_string(sliceIndex) + "_PeakFinder";
@@ -114,7 +114,7 @@ void PeakFinder(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
   h1->Draw("EH");
   h1->SetTitle(Form("%s: X-slice at Y-bin %d", h2->GetName(), sliceIndex));
   h1->GetXaxis()->SetTitle("TOF [us]");
-  h1->GetYaxis()->SetTitle("Voltage [mV]");
+  h1->GetYaxis()->SetTitle("Count [1/bin]");
   std::cout << "min=" << h1->GetMinimum() << ", max=" << h1->GetMaximum() << std::endl;
 
   TGraphErrors *gr = new TGraphErrors();
