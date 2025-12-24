@@ -1,7 +1,7 @@
 #include "include.h"
 
-void LaserEffect(const char* basename1 = "RUN45_Spatial_40Ca_Beamoff",
-		 const char* basename2 = "RUN45_Spatial_40Ca_Beamon48" )
+void LaserEffect(const char* basename1 = "RUN51_Spatial_40Ca_Beamoff",
+		 const char* basename2 = "RUN51_Spatial_40Ca_Beamon48" )
 {
   std::string base1 = strip_ext_and_dir(basename1);
   std::string infile1 = base1 + "_CaGraph.root";
@@ -63,8 +63,11 @@ void LaserEffect(const char* basename1 = "RUN45_Spatial_40Ca_Beamoff",
   
   TMultiGraph* mg[num_ca];
   for (int i = 0; i < num_ca; i++) {
-    funcgaus1[i] = new TF1(Form("func_%s",gr1[i]->GetName()),"gaus");
-    funcgaus2[i] = new TF1(Form("func_%s",gr2[i]->GetName()),"gaus");
+    funcgaus1[i] = new TF1(Form("func_%s",gr1[i]->GetName()),"gaus+[3]");
+    funcgaus2[i] = new TF1(Form("func_%s",gr2[i]->GetName()),"gaus+[3]");
+    funcgaus1[i]->SetParName(3, "Offset");
+    funcgaus2[i]->SetParName(3, "Offset");
+
     gr1[i]->SetLineColor(kBlack);
     gr1[i]->SetMarkerColor(kBlack);
     gr2[i]->SetLineColor(kRed);
