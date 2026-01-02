@@ -54,7 +54,7 @@ void LaserEffect(const char* basename1 = "RUN51_Spatial_40Ca_Beamoff",
   
   TCanvas* c1 = new TCanvas("c1", "Laser Effect", 800, 900);
   c1->Divide(1,3);
-  TLegend* leg = new TLegend(0.15, 0.5, 0.35, 0.7,"");
+  TLegend* leg = new TLegend(0.65, 0.5, 0.85, 0.7,"");
   leg->AddEntry(gr1[0], "Without Laser", "pl");
   leg->AddEntry(gr2[0], "With    Laser", "pl");
 
@@ -65,8 +65,16 @@ void LaserEffect(const char* basename1 = "RUN51_Spatial_40Ca_Beamoff",
   for (int i = 0; i < num_ca; i++) {
     funcgaus1[i] = new TF1(Form("func_%s",gr1[i]->GetName()),"gaus+[3]");
     funcgaus2[i] = new TF1(Form("func_%s",gr2[i]->GetName()),"gaus+[3]");
-    funcgaus1[i]->SetParName(3, "Offset");
-    funcgaus2[i]->SetParName(3, "Offset");
+    funcgaus1[i]->SetParNames("A","Mean","Sigma","Offset");
+    funcgaus2[i]->SetParNames("A","Mean","Sigma","Offset");
+    funcgaus1[i]->SetParameters(1.e3, 60., 10., 100.);
+    funcgaus2[i]->SetParameters(1.e3, 60., 10., 100.);
+    funcgaus1[i]->SetParLimits(0,0.,1.e7);
+    funcgaus1[i]->SetParLimits(1,20,60);
+    funcgaus1[i]->SetParLimits(2,3.,30.);
+    funcgaus2[i]->SetParLimits(0,0.,1.e7);
+    funcgaus2[i]->SetParLimits(1,20,60);
+    funcgaus2[i]->SetParLimits(2,3.,30.);
 
     gr1[i]->SetLineColor(kBlack);
     gr1[i]->SetMarkerColor(kBlack);

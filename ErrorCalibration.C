@@ -27,15 +27,15 @@ void FitMultiGauss(TH1D* h1, const char* envbasename)
   // --- 初期値設定 ---
   double A0 = h1->GetMaximum();
   fitfunc->SetParameter(0, h1->GetMinimum()); // baseline
-  for (int i = 0; i < ngaus; ++i) {    
+  for (int i = 0; i < ngaus; ++i) {
     double mean  = MasstoTOF(mass[i],def_tof_40Ca);
-    //    cout << mass[i]<<" "<<mean<<endl;
+    cout << mass[i]<<" "<<mean<<endl;
     fitfunc->SetParameter(1 + 3*i + 0, A0*0.1); // amplitude
     fitfunc->SetParameter(1 + 3*i + 1, mean);   // mean
     fitfunc->SetParameter(1 + 3*i + 2, def_sigma);  // sigma
 
     fitfunc->SetParLimits(1 + 3*i + 0, A0*0., A0*1.);
-    fitfunc->SetParLimits(1 + 3*i + 1, mean * 0.99, mean * 1.01);
+    fitfunc->SetParLimits(1 + 3*i + 1, mean * 0.98, mean * 1.02);
     fitfunc->SetParLimits(1 + 3*i + 2, def_sigma * 0.7, def_sigma * 1.5);
   }
 
@@ -83,8 +83,8 @@ void FitMultiGauss(TH1D* h1, const char* envbasename)
 }
 
 
-//void ErrorCalibration(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
-void ErrorCalibration(const char* basename = "RUN51_Spatial_40Ca_Beamoff",
+void ErrorCalibration(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
+		      //void ErrorCalibration(const char* basename = "RUN51_Spatial_40Ca_Beamoff",
 		      const int sliceIndex = 1,
 		      const char* histname = "h2_subtracted"
 		      )
