@@ -2,16 +2,17 @@
 # List file names
 
 #Input working dir name 
-runname=RUN45
+#runname=RUN45
+runname=RUN51
 
 #Input files
 files=(
-RUN45_Spatial_40Ca_Beamoff.txt
-RUN45_Spatial_40Ca_Beamon48.txt
-RUN45_Spatial_44Ca_48Ca_Beamoff.txt
-RUN45_Spatial_44Ca_48Ca_Beamon48.txt
-#RUN51_Spatial_40Ca_Beamoff.txt
-#RUN51_Spatial_40Ca_Beamon48.txt
+# RUN45_Spatial_40Ca_Beamoff.txt
+# RUN45_Spatial_40Ca_Beamon48.txt
+# RUN45_Spatial_44Ca_48Ca_Beamoff.txt
+# RUN45_Spatial_44Ca_48Ca_Beamon48.txt
+RUN51_Spatial_40Ca_Beamoff.txt
+RUN51_Spatial_40Ca_Beamon48.txt
 )
 
 mkdir -p $runname/data
@@ -19,8 +20,6 @@ for f in "${files[@]}"; do
   cp "./data/$f" "$runname/data/"
 done
 cd $runname
-
-: <<'EOF'
 
 #Create ROOT files
 for f in "${files[@]}"; do
@@ -50,7 +49,6 @@ for f in "${files[@]}"; do
 	root -l -b -q "../PeakFit.C(\"$f\",$Yslice)"
     done
 done
-EOF
 
 #Identity peaks and integrate their counts
 for f in "${files[@]}"; do
@@ -71,3 +69,5 @@ f0="${files[0]}"
 f1="${files[1]}"
 root -l -b -q "../LaserEffect.C(\"$f0\",\"$f1\")"
 
+: <<'EOF'
+EOF

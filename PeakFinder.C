@@ -1,4 +1,5 @@
 #include "include.h"
+#include "GetCaGraphs.C"
 
 double xmin = 3.10;
 double xmax = 4.09;
@@ -81,8 +82,8 @@ TGraphErrors* MakeDiffGraph(const TGraphErrors* gr1, const TGraphErrors* gr2, co
 }
 
 
-//void PeakFinder(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
-void PeakFinder(const char* basename = "RUN51_Spatial_40Ca_Beamoff",
+void PeakFinder(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
+		//void PeakFinder(const char* basename = "RUN51_Spatial_40Ca_Beamoff",
 		const int sliceIndex = 11)
 {
   const char* histname = "h2_scaled";
@@ -122,10 +123,17 @@ void PeakFinder(const char* basename = "RUN51_Spatial_40Ca_Beamoff",
   TGraphErrors *gr_calc = new TGraphErrors();
   gr->SetTitle("Mass number v.s TOF; Mass number;TOF [us];");
 
+  //--------------------------------------------------------------
+  // Get parameters
+  //--------------------------------------------------------------  
+  std::string envname = envdir + base + "_slice_Y" + std::to_string(sliceIndex) + "_PeakFit.env";
+  Double_t Ca40_A, Ca40_mean, Ca40_sigma;
+  ReadCa40PeakParam(envname, Ca40_A, Ca40_mean, Ca40_sigma);
+
   // --- フィット実行 ---
   int ngaus = sizeof(mass) / sizeof(mass[0]);
   for (int i = 0; i < ngaus; i++) {
-    double mean  = MasstoTOF(mass[i],def_tof_40Ca,0); //default 
+    double mean  = MasstoTOF(mass[i], Ca40_mean, 0); //default 
     double xmin_single = mean * 0.992;
     double xmax_single = mean * 1.008;
     auto [peak_bin, peak_val] = FindMaxBinAndValueInRange(h1, xmin_single, xmax_single);
