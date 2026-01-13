@@ -101,11 +101,13 @@ void GetCaGraphs(const char* basename = "RUN52_Spatial_Beamoff_550")
   std::string envdir  = "./results/";
   std::string outdir  = "./root/ca_graph/";
   std::string outpath = outdir +  base + "_CaGraph.root";
+  std::string textdir  = "./text/ca_graph/";
   std::string figdir  = "./outputs/ca_graph/";
   std::string figpath_pdf = figdir + base + ".pdf";
   std::string figpath_png = figdir + base + ".png";
   if (gSystem->AccessPathName(figdir.c_str())) gSystem->mkdir(figdir.c_str(), true);
   if (gSystem->AccessPathName(outdir.c_str())) gSystem->mkdir(outdir.c_str(), true);
+  if (gSystem->AccessPathName(textdir.c_str())) gSystem->mkdir(textdir.c_str(), true);
 
   TH2D* h2 = GetTH2Dfile(infile.c_str(), indir.c_str(), histname);
   h2->Draw();
@@ -190,7 +192,6 @@ void GetCaGraphs(const char* basename = "RUN52_Spatial_Beamoff_550")
     DrawMassAxis(h1,peak_center,xmin,xmax,ymin,ymax);
     canv->SetGrid();
     canv->SaveAs(Form("%s%s_Y%d.png",figdir.c_str(),base.c_str(),iy));
-    return;
     delete h1;
     delete canv;
   }
@@ -231,7 +232,11 @@ void GetCaGraphs(const char* basename = "RUN52_Spatial_Beamoff_550")
   c2->Update();
   c2->SaveAs(figpath_pdf.c_str());
   TFile* fout = new TFile(outpath.c_str(), "RECREATE");
-  for (int i = 0; i < num_ca; ++i) gr[i]->Write();
+  for (int i = 0; i < num_ca; ++i) {
+    gr[i]->Write();
+    TString fname = Form("%s%s_%s.txt",textdir.c_str(), basename, gr[i]->GetName());
+    SaveTGraphErrors(gr[i], fname.Data());    
+  }
   fout->Close();
   //  fin->Close();
   return;

@@ -179,4 +179,31 @@ TH2D* GetTH2Dfile(const char* basename, const char* dirname, const char* histnam
   return h2;
 }
 
+void SaveTGraphErrors(const TGraphErrors* gr, const char* filename = "graph.txt")
+{
+  if (!gr) {
+    std::cerr << "SaveTGraphErrors_XY_EY: null graph pointer" << std::endl;
+    return;
+  }
+  std::ofstream ofs(filename);
+  if (!ofs.is_open()) {
+    std::cerr << "Cannot open output file: " << filename << std::endl;
+    return;
+  }
+
+  // Header
+  ofs << "# x y ey" << std::endl;
+  int N = gr->GetN();
+  const double* x  = gr->GetX();
+  const double* y  = gr->GetY();
+  const double* ey = gr->GetEY();
+
+  for (int i = 0; i < N; ++i) {
+    ofs << x[i]  << "\t"
+	<< y[i]  << "\t"
+	<< ey[i] << std::endl;
+  }
+  ofs.close();
+  std::cout << "Saved " << N << " points to " << filename << std::endl;
+}
 
