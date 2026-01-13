@@ -43,11 +43,30 @@ void FitMultiGauss(TH1D* h1, const char* envbasename)
   TCanvas* c2 = new TCanvas("c2", "Multi-Gaussian Fit", 900, 700);
   // ---- 描画 ----
   h1->Print();
-  h1->Draw("EH");   // "E"はNaNの発生源になるので外す
-  c2->Modified();
+  h1->Draw("EH");   
+  h1->Fit(fitfunc, "R");
   c2->Update();
-  
+
+  //refit with 3 sigma
+  double mean = fitfunc->GetParameter(2);
+  double sigma = fitfunc->GetParameter(3);
+  TF1 *f = h1->GetFunction("fitfunc");
+  if (f) {
+    h1->GetListOfFunctions()->Remove(f);
+    delete f;
+  }
+
+  //  fitfunc->SetRange(mean-3.*sigma, mean+3.*sigma);
   h1->Fit(fitfunc, "R+");
+  fitfunc->Print();
+  c2->Update();
+
+  std::cout << mean<<" "<<sigma <<  std::endl;
+  std::cout << "fitfunc ptr = " << fitfunc << std::endl;
+  std::cout << "hist func ptr = "
+	    << h1->GetFunction("fitfunc") << std::endl;
+  return;
+
   double chi2 = fitfunc->GetChisquare();
   double ndf  = fitfunc->GetNDF();
   double chi2ndf = chi2 / ndf ;

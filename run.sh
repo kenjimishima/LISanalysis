@@ -8,10 +8,10 @@ runname=RUN52
 
 #Input files
 files=(
-# RUN45_Spatial_40Ca_Beamoff.txt
-# RUN45_Spatial_40Ca_Beamon48.txt
-# RUN45_Spatial_44Ca_48Ca_Beamoff.txt
-# RUN45_Spatial_44Ca_48Ca_Beamon48.txt
+#RUN45_Spatial_40Ca_Beamoff.txt
+#RUN45_Spatial_40Ca_Beamon48.txt
+#RUN45_Spatial_44Ca_48Ca_Beamoff.txt
+#RUN45_Spatial_44Ca_48Ca_Beamon48.txt
 #RUN51_Spatial_40Ca_Beamoff.txt
 #RUN51_Spatial_40Ca_Beamon48.txt
 RUN52_Spatial_Beamoff_550.txt

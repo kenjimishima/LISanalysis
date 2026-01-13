@@ -81,8 +81,8 @@ TGraphErrors* MakeDiffGraph(const TGraphErrors* gr1, const TGraphErrors* gr2, co
   return gr_diff;
 }
 
-
-void PeakFinder(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
+void PeakFinder(const char* basename = "RUN52_Spatial_Beamoff_550",
+		//void PeakFinder(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
 		//void PeakFinder(const char* basename = "RUN51_Spatial_40Ca_Beamoff",
 		const int sliceIndex = 11)
 {
@@ -229,14 +229,15 @@ void PeakFinder(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
   TCanvas* c4 = new TCanvas("c4", "Mass counts", 800, 600);
   h_outgas -> Draw("EH");
   gPad->SetGrid();
-  
+  c4->SaveAs(Form("%s/%s_Integral_Yslice%d_Integral.png",figdir.c_str(),base.c_str(),sliceIndex));
+  c4->SaveAs(Form("%s/%s_Integral_Yslice%d_Integral.pdf",figdir.c_str(),base.c_str(),sliceIndex));
+  c4->SaveAs(Form("%s/%s_Integral_Yslice%d_Integral.root",figdir.c_str(),base.c_str(),sliceIndex));
   
   TFile* fout = new TFile(outpath.c_str(), "RECREATE");
   gr->Write();
   gr_calc->Write();
   h1->Write();
   h_outgas->Write();
-
   fout->Close();
   //  fin->Close();
 }

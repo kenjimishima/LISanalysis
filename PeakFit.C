@@ -70,6 +70,12 @@ void PeakFit(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
   double ep2 = fitfunc->GetParError(2);
   //  cout <<p0<<" +/-"<<ep0<<" : "<<p1<<" +/-"<<ep1<<" : "<<p2<<" +/-"<<ep2<<endl;
 
+  // --- Histogramを保存 ---
+  TFile* fout = new TFile(outpath.c_str(), "RECREATE");
+  h1->Write();
+  fout->Close();
+  //  fin->Close();
+
   // --- TEnvに保存 ---
   TString outenv = Form("./results/%s.env", envbasename.c_str());
   TEnv env;
