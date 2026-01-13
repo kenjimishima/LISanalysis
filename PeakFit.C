@@ -1,8 +1,9 @@
 #include "include.h"
 
-void PeakFit(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
+//void PeakFit(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
 //void PeakFit(const char* basename = "RUN51_Spatial_40Ca_Beamoff",
-	     const int sliceIndex = 2)
+void PeakFit(const char* basename = "RUN52_Spatial_Beamoff_550",
+const int sliceIndex = 11)
 {
   const char* histname = "h2_scaled";
   std::string base = strip_ext_and_dir(basename);

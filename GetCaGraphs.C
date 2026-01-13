@@ -1,5 +1,78 @@
 #include "include.h"
 
+Double_t draw_mass_min = 36;
+Double_t draw_mass_max = 52;
+
+/**
+ * Draw nonlinear mass axis using TOFtoMass()
+ *
+ * @param h          TH1 (x-axis = TOF)
+ * @param tof_40Ca   reference TOF for 40Ca
+ */
+void DrawMassAxis(TH1* h, Double_t tof_40Ca, Double_t xmin, Double_t xmax, Double_t ymin, Double_t ymax)
+{
+  if (!h) return;
+  std::vector<Double_t> masses = {38, 40, 42, 44, 46, 48};
+  gPad->Update();  // ★ 必須
+
+  // TOF range
+  Double_t tof_min = h->GetXaxis()->GetXmin();
+  Double_t tof_max = h->GetXaxis()->GetXmax();
+  // Pad geometry
+  Double_t y_top   = gPad->GetUymax();
+  Double_t y_range = gPad->GetUymax() - gPad->GetUymin();
+  // Mass range (axis frame only)
+  Double_t mass_min = TOFtoMass(tof_min, tof_40Ca, 0);
+  Double_t mass_max = TOFtoMass(tof_max, tof_40Ca, 0);
+
+  // ---- Manual ticks ----
+  Double_t tick_len     = 0.20 * ymax;
+  Double_t label_offset = 0.30 * ymax;
+  for (Double_t m_target : masses) {
+    // --- invert TOFtoMass numerically ---
+    Double_t tof_tick = -1;
+    const Int_t Nscan = 5000;
+    for (Int_t i = 0; i < Nscan - 1; ++i) {
+      Double_t tof1 = tof_min + (tof_max - tof_min) * i / Nscan;
+      Double_t tof2 = tof_min + (tof_max - tof_min) * (i + 1) / Nscan;
+      Double_t m1 = TOFtoMass(tof1, tof_40Ca, 0);
+      Double_t m2 = TOFtoMass(tof2, tof_40Ca, 0);
+      if ((m1 - m_target) * (m2 - m_target) <= 0) {
+	tof_tick = 0.5 * (tof1 + tof2);
+	break;
+      }
+    }
+
+    if (tof_tick < tof_min || tof_tick > tof_max) continue;
+    // Tick
+    TLine* l = new TLine(
+			 tof_tick, ymax,
+			 tof_tick, ymax + tick_len
+			 );
+    l->Draw();
+    // Label
+    TLatex* t = new TLatex(
+			   tof_tick,
+			   ymax + tick_len + label_offset,
+			   Form("%.0f", m_target)
+			   );
+    t->SetTextAlign(22);
+    t->SetTextSize(0.035);
+    t->SetTextFont(42);
+    t->Draw();
+    // Title
+    TLatex* titl = new TLatex(
+			   0.1*xmin + 0.9*xmax,
+			   ymax*2.,
+			   "Mass number [e/M]"
+			   );
+    titl->SetTextAlign(22);
+    titl->SetTextSize(0.04);
+    titl->SetTextFont(42);
+    titl->Draw();
+  }
+}
+
 Bool_t ReadCa40PeakParam(const std::string &envpath,
 			 Double_t &A,
 			 Double_t &mean,
@@ -18,7 +91,8 @@ Bool_t ReadCa40PeakParam(const std::string &envpath,
 }
 
 //void GetCaGraphs(const char* basename = "RUN45_Spatial_40Ca_Beamoff")
-void GetCaGraphs(const char* basename = "RUN51_Spatial_40Ca_Beamoff")
+//void GetCaGraphs(const char* basename = "RUN51_Spatial_40Ca_Beamoff")
+void GetCaGraphs(const char* basename = "RUN52_Spatial_Beamoff_550")
 {
   const char* histname = "h2_scaled";
   std::string base = strip_ext_and_dir(basename);
@@ -38,8 +112,6 @@ void GetCaGraphs(const char* basename = "RUN51_Spatial_40Ca_Beamoff")
   // --- X, Y ビン数と範囲を取得 ---
   Int_t nx = h2->GetNbinsX();
   Int_t ny = h2->GetNbinsY();
-  //  Double_t xmin = def_tof_40Ca * 0.992;
-  //  Double_t xmax = def_tof_40Ca * 1.008;
   Double_t dsigma = 4.;  //Integral region of Ca peaks in sigma
 
   //--------------------------------------------------------------
@@ -54,6 +126,7 @@ void GetCaGraphs(const char* basename = "RUN51_Spatial_40Ca_Beamoff")
   //--------------------------------------------------------------  
   for (Int_t iy = 1; iy <= ny; ++iy) {
     TH1D* h1 = h2->ProjectionX(Form("h1_Y%d", iy), iy, iy);
+    h1->SetTitle("");
     if (!h1) {
       cerr << "Can not read" << h1->GetName()<<endl;
       exit(0);
@@ -65,17 +138,16 @@ void GetCaGraphs(const char* basename = "RUN51_Spatial_40Ca_Beamoff")
     canv->SetLogy();
     h1->Draw("eh");
     
-  //--------------------------------------------------------------
-  // Get parameters
-  //--------------------------------------------------------------  
+    //--------------------------------------------------------------
+    // Get parameters
+    //--------------------------------------------------------------  
     std::string envname = envdir + base + "_slice_Y" + std::to_string(iy) + "_PeakFit.env";
     Double_t Ca40_A, Ca40_mean, Ca40_sigma;
     ReadCa40PeakParam(envname, Ca40_A, Ca40_mean, Ca40_sigma);
     Double_t peak_center  = Ca40_mean;
     Double_t sigma = Ca40_sigma;
-    cout << peak_center <<" xmaxmin "<< sigma<<endl;
+    cout <<"peak center ="<< peak_center <<", sigma = "<< sigma<<endl;
 
-    
     // --- 領域定義 ---
     Double_t ca_centers[num_ca];
     Double_t ca_xmin[num_ca];
@@ -84,16 +156,14 @@ void GetCaGraphs(const char* basename = "RUN51_Spatial_40Ca_Beamoff")
     Double_t err[num_ca];
 
     std::vector<TLine*> lines;
-    Double_t xmin = MasstoTOF(ca_mass[0]-2, peak_center);
-    Double_t xmax = MasstoTOF(ca_mass[num_ca-1]+2, peak_center);
+    Double_t xmin = MasstoTOF(draw_mass_min, peak_center);
+    Double_t xmax = MasstoTOF(draw_mass_max, peak_center);
     Double_t ymin = 0.1;
-    Double_t ymax = h1->GetMaximum() * 100.;
+    Double_t ymax = h1->GetMaximum() * 5.;
     
     // --- 積分と誤差 ---
     for (int i = 0; i < num_ca; ++i) {
-      Double_t eff_mass = ca_mass[i];
-      //      eff_mass -= (ca_mass[i] - mass_40Ca)*0.014;
-      ca_centers[i] = MasstoTOF(eff_mass, peak_center, 0);// without TOF correction
+      ca_centers[i] = MasstoTOF(ca_mass[i], peak_center);
       ca_xmin[i] = ca_centers[i] - dsigma*sigma;
       ca_xmax[i] = ca_centers[i] + dsigma*sigma;
       Int_t bmin = h1->FindBin(ca_xmin[i]);
@@ -108,19 +178,21 @@ void GetCaGraphs(const char* basename = "RUN51_Spatial_40Ca_Beamoff")
       lines.push_back(line_min);
       lines.push_back(line_max);
     }
-
     h1->GetXaxis()->SetRangeUser(xmin,xmax);
-    h1->GetYaxis()->SetRangeUser(ymin,ymax*0.5);
+    h1->GetYaxis()->SetRangeUser(ymin,ymax);
     // --- ヒストグラムを描画してから、線を重ねる ---
     for (auto line : lines) {
       line->SetLineColor(kRed);
       line->SetLineStyle(2);
       line->Draw("same");
     }
+
+    DrawMassAxis(h1,peak_center,xmin,xmax,ymin,ymax);
     canv->SetGrid();
     canv->SaveAs(Form("%s%s_Y%d.png",figdir.c_str(),base.c_str(),iy));
-
+    return;
     delete h1;
+    delete canv;
   }
 
   //--------------------------------------------------------------

@@ -78,20 +78,20 @@ namespace {
 }
 
 // Get TOF time from mass number
-Double_t MasstoTOF(Double_t mass, Double_t tof_40Ca, const Bool_t bTOFCorr=0)
+Double_t MasstoTOF(Double_t mass, Double_t tof_40Ca, const Bool_t bEcho=1)
 {
   Double_t tof = (tof_40Ca - trigger_delay) * TMath::Sqrt(mass/mass_40Ca) + trigger_delay;
-  cout <<"Expected value for mass "<< mass <<" is "<<tof<<" [us] "<<endl;
+  if(bEcho) cout <<"Expected value for mass "<< mass <<" is "<<tof<<" [us] "<<endl;
   return tof;
 }
 
 // Get mass number from TOF time
-Double_t TOFtoMass(Double_t tof, Double_t tof_40Ca, const Bool_t bTOFCorr=0)
+Double_t TOFtoMass(Double_t tof, Double_t tof_40Ca, const Bool_t bEcho=1)
 {
   Double_t tof_nodelay = tof - trigger_delay;
   Double_t tof_40Ca_nodelay = tof_40Ca - trigger_delay;
   Double_t mass = mass_40Ca * TMath::Sq(tof_nodelay/tof_40Ca_nodelay);
-  cout <<"Expected value for TOF at "<< tof <<" [us] is "<<mass<<endl;
+  if(bEcho) cout <<"Expected value for TOF at "<< tof <<" [us] is "<<mass<<endl;
   return mass;
 }
 

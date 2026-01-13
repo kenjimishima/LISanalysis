@@ -56,7 +56,7 @@ void FitMultiGauss(TH1D* h1, const char* envbasename)
     delete f;
   }
 
-  //  fitfunc->SetRange(mean-3.*sigma, mean+3.*sigma);
+  fitfunc->SetRange(mean-3.*sigma, mean+3.*sigma);
   h1->Fit(fitfunc, "R+");
   fitfunc->Print();
   c2->Update();
@@ -65,7 +65,6 @@ void FitMultiGauss(TH1D* h1, const char* envbasename)
   std::cout << "fitfunc ptr = " << fitfunc << std::endl;
   std::cout << "hist func ptr = "
 	    << h1->GetFunction("fitfunc") << std::endl;
-  return;
 
   double chi2 = fitfunc->GetChisquare();
   double ndf  = fitfunc->GetNDF();
