@@ -3,7 +3,8 @@
 
 #Input working dir name 
 #runname=RUN45
-runname=RUN51
+#runname=RUN51
+runname=RUN52
 
 #Input files
 files=(
@@ -11,15 +12,21 @@ files=(
 # RUN45_Spatial_40Ca_Beamon48.txt
 # RUN45_Spatial_44Ca_48Ca_Beamoff.txt
 # RUN45_Spatial_44Ca_48Ca_Beamon48.txt
-RUN51_Spatial_40Ca_Beamoff.txt
-RUN51_Spatial_40Ca_Beamon48.txt
+#RUN51_Spatial_40Ca_Beamoff.txt
+#RUN51_Spatial_40Ca_Beamon48.txt
+RUN52_Spatial_Beamoff_550.txt
+RUN52_Spatial_Beamoff_650.txt
+RUN52_Spatial_Beamon48_550.txt
+RUN52_Spatial_Beamon48_650.txt
 )
+
 
 mkdir -p $runname/data
 for f in "${files[@]}"; do
   cp "./data/$f" "$runname/data/"
 done
 cd $runname
+
 
 #Create ROOT files
 for f in "${files[@]}"; do
@@ -66,8 +73,13 @@ for f in "${files[@]}"; do
 done
 
 f0="${files[0]}"
-f1="${files[1]}"
+f1="${files[2]}"
+root -l -b -q "../LaserEffect.C(\"$f0\",\"$f1\")"
+
+f0="${files[1]}"
+f1="${files[3]}"
 root -l -b -q "../LaserEffect.C(\"$f0\",\"$f1\")"
 
 : <<'EOF'
 EOF
+

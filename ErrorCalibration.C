@@ -82,8 +82,8 @@ void FitMultiGauss(TH1D* h1, const char* envbasename)
   std::cout << "Saved fit result:\n  " << outpng << "\n  " << outpdf << std::endl;
 }
 
-
-void ErrorCalibration(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
+void ErrorCalibration(const char* basename = "RUN52_Spatial_Beamoff_550.txt",
+		      //void ErrorCalibration(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
 		      //void ErrorCalibration(const char* basename = "RUN51_Spatial_40Ca_Beamoff",
 		      const int sliceIndex = 1,
 		      const char* histname = "h2_subtracted"
