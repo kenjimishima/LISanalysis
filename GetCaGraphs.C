@@ -160,7 +160,7 @@ void GetCaGraphs(const char* basename = "RUN52_Spatial_Beamoff_550")
     std::vector<TLine*> lines;
     Double_t xmin = MasstoTOF(draw_mass_min, peak_center);
     Double_t xmax = MasstoTOF(draw_mass_max, peak_center);
-    Double_t ymin = 0.1;
+    Double_t ymin = 0.01;
     Double_t ymax = h1->GetMaximum() * 5.;
     
     // --- 積分と誤差 ---

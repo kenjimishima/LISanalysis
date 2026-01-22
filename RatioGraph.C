@@ -73,6 +73,7 @@ void RatioGraph(const char* basename = "RUN45_Spatial_40Ca_Beamoff")
   mg->Draw("APL");
   gPad->SetGrid();
   gPad->SetLogy();
+  mg->GetYaxis()->SetRangeUser(1.e-3,10);
   leg->Draw();
   //--------------------------------------------------------------
   // 保存

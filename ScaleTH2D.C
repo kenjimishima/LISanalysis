@@ -68,7 +68,7 @@ void ScaleTH2D(const char* basename="RUN45_Spatial_40Ca_Beamoff",
   for (int ix = 1; ix <= nx; ++ix) {
     for (int iy = 1; iy <= ny; ++iy) {
       double val = h2->GetBinContent(ix, iy);
-      double newval = (val-base_voltage) * count_per_mV;
+      double newval = val * count_per_mV;
       double err = std::sqrt(std::abs(newval)); // sqrt(N)
       h2_scaled->SetBinContent(ix, iy, newval);
       h2_scaled->SetBinError(ix, iy, err);

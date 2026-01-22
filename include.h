@@ -32,8 +32,10 @@ Double_t mass_48Ca = 48.;
 const Int_t num_ca = 3;
 Double_t ca_mass[num_ca] = {mass_40Ca, mass_44Ca, mass_48Ca};
 
-Double_t baseline_xmin = 2.60;
-Double_t baseline_xmax = 3.00;
+//Double_t baseline_xmin = 2.60;
+//Double_t baseline_xmax = 3.00;
+Double_t baseline_xmin = 5.00;
+Double_t baseline_xmax = 5.50;
 Double_t def_sigma = 0.01; // [us]
 
 //TOF parameters
