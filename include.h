@@ -26,11 +26,24 @@
 gStyle->SetOptFit(1111);
 gStyle->SetOptStat(1001111);
 
-Double_t mass_40Ca = 40.;
-Double_t mass_44Ca = 44.;
-Double_t mass_48Ca = 48.;
+Double_t A40Ca = 0.969;
+Double_t A42Ca = 0.00647;
+Double_t A44Ca = 0.0209;
+Double_t A48Ca = 0.00187;
+
+Double_t Mu40Ca = 422.79179;
+Double_t Mu42Ca = 422.79156;
+Double_t Mu44Ca = 422.79133;
+Double_t Mu48Ca = 422.79089;
+
+Double_t mass_40Ca = 39.96259098;
+Double_t mass_42Ca = 41.95861801;
+Double_t mass_44Ca = 43.9554818;
+Double_t mass_48Ca = 47.952534;
 const Int_t num_ca = 3;
 Double_t ca_mass[num_ca] = {mass_40Ca, mass_44Ca, mass_48Ca};
+Double_t ca_abundance[num_ca] = {A40Ca, A44Ca, A48Ca};
+Double_t ca_wavelength[num_ca] = {Mu40Ca, Mu44Ca, Mu48Ca};
 
 //Double_t baseline_xmin = 2.60;
 //Double_t baseline_xmax = 3.00;

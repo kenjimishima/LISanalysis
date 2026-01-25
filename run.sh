@@ -5,24 +5,32 @@
 #runname=RUN45
 #runname=RUN51
 #runname=RUN52
-runname=RUN53
+#runname=RUN53
+runname=RUN54
 
 #Input files
 files=(
-#RUN45_Spatial_40Ca_Beamoff.txt
-#RUN45_Spatial_40Ca_Beamon48.txt
-#RUN45_Spatial_44Ca_48Ca_Beamoff.txt
-#RUN45_Spatial_44Ca_48Ca_Beamon48.txt
-#RUN51_Spatial_40Ca_Beamoff.txt
-#RUN51_Spatial_40Ca_Beamon48.txt
+# RUN45_Spatial_40Ca_Beamoff.txt
+# RUN45_Spatial_40Ca_Beamon48.txt
+# RUN45_Spatial_44Ca_48Ca_Beamoff.txt
+# RUN45_Spatial_44Ca_48Ca_Beamon48.txt
+# RUN51_Spatial_40Ca_Beamoff.txt
+# RUN51_Spatial_40Ca_Beamon48.txt
 # RUN52_Spatial_Beamoff_550.txt
 # RUN52_Spatial_Beamoff_650.txt
 # RUN52_Spatial_Beamon48_550.txt
 # RUN52_Spatial_Beamon48_650.txt
-RUN53_Spatial_Beamoff_550.txt
-RUN53_Spatial_Beamoff_600.txt
-RUN53_Spatial_Beamon48_550.txt
-RUN53_Spatial_Beamon48_600.txt
+# RUN53_Spatial_Beamoff_550.txt
+# RUN53_Spatial_Beamoff_600.txt
+# RUN53_Spatial_Beamon48_550.txt
+# RUN53_Spatial_Beamon48_600.txt
+RUN54_Spatial_Beamoff_500.txt
+RUN54_Spatial_Beamoff_550.txt
+RUN54_Spatial_Beamoff_600.txt
+RUN54_Spatial_Beamon48_500_withlens.txt
+RUN54_Spatial_Beamon48_500_wolens.txt
+RUN54_Spatial_Beamon48_550_withlens.txt
+RUN54_Spatial_Beamon48_550_wolens.txt
 )
 
 mkdir -p $runname/data
@@ -32,7 +40,6 @@ done
 cd $runname
 
 : <<'EOF'
-
 
 #Create ROOT files
 for f in "${files[@]}"; do
@@ -70,8 +77,6 @@ for f in "${files[@]}"; do
 	root -l -b -q "../PeakFinder.C(\"$f0\",$Yslice)"
     done
 done
-
-EOF
     
 #Get Ca peak ratios
 for f in "${files[@]}"; do
@@ -80,13 +85,21 @@ for f in "${files[@]}"; do
     root -l -b -q "../RatioGraph.C(\"$f\")"
 done
 
-f0="${files[0]}"
-f1="${files[2]}"
-root -l -b -q "../LaserEffect.C(\"$f0\",\"$f1\")"
+EOF
 
-f0="${files[1]}"
+f0="${files[0]}"
 f1="${files[3]}"
 root -l -b -q "../LaserEffect.C(\"$f0\",\"$f1\")"
 
+f0="${files[0]}"
+f1="${files[4]}"
+root -l -b -q "../LaserEffect.C(\"$f0\",\"$f1\")"
 
+f0="${files[1]}"
+f1="${files[5]}"
+root -l -b -q "../LaserEffect.C(\"$f0\",\"$f1\")"
+
+f0="${files[1]}"
+f1="${files[6]}"
+root -l -b -q "../LaserEffect.C(\"$f0\",\"$f1\")"
 

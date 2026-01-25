@@ -53,6 +53,9 @@ void LaserEffect(const char* basename1 = "RUN51_Spatial_40Ca_Beamoff",
   }
   
   TCanvas* c1 = new TCanvas("c1", "Laser Effect", 800, 900);
+  gr1[0]->Draw("goff");
+  double gr_max = gr1[0]->GetYaxis()->GetXmax();
+  cout << gr_max<<endl;
   c1->Divide(1,3);
   TLegend* leg = new TLegend(0.65, 0.5, 0.85, 0.7,"");
   leg->AddEntry(gr1[0], "Without Laser", "pl");
@@ -67,8 +70,8 @@ void LaserEffect(const char* basename1 = "RUN51_Spatial_40Ca_Beamoff",
     funcgaus2[i] = new TF1(Form("func_%s",gr2[i]->GetName()),"gaus+[3]");
     funcgaus1[i]->SetParNames("A","Mean","Sigma","Offset");
     funcgaus2[i]->SetParNames("A","Mean","Sigma","Offset");
-    funcgaus1[i]->SetParameters(1.e3, 60., 10., 100.);
-    funcgaus2[i]->SetParameters(1.e3, 60., 10., 100.);
+    funcgaus1[i]->SetParameters(gr_max*ca_abundance[i], 50., 10., 0.);
+    funcgaus2[i]->SetParameters(gr_max*ca_abundance[i], 50., 10., 0.);
     funcgaus1[i]->SetParLimits(0,0.,1.e7);
     funcgaus1[i]->SetParLimits(1,20,60);
     funcgaus1[i]->SetParLimits(2,3.,30.);
@@ -89,6 +92,9 @@ void LaserEffect(const char* basename1 = "RUN51_Spatial_40Ca_Beamoff",
     mg[i]->Add(gr2[i]);
     c1->cd(i+1);
     mg[i]->Draw("AP");
+    double ymin = mg[i]->GetYaxis()->GetXmin();
+    double ymax = mg[i]->GetYaxis()->GetXmax();
+    mg[i]->GetYaxis()->SetRangeUser(ymin,ymax*1.5);
     gr1[i]->Fit(funcgaus1[i]);
     gr2[i]->Fit(funcgaus2[i]);
 
@@ -98,8 +104,8 @@ void LaserEffect(const char* basename1 = "RUN51_Spatial_40Ca_Beamoff",
     TPaveStats *stats2 = (TPaveStats*)gr2[i]->GetListOfFunctions()->FindObject("stats");
     stats1->SetTextColor(1);
     stats2->SetTextColor(2);
-    stats1->SetX1NDC(0.10); stats1->SetX2NDC(0.40); stats1->SetY1NDC(0.75);stats1->SetY2NDC(0.99);
-    stats2->SetX1NDC(0.70); stats2->SetX2NDC(0.99); stats2->SetY1NDC(0.75);stats2->SetY2NDC(0.99);
+    stats1->SetX1NDC(0.12); stats1->SetX2NDC(0.40); stats1->SetY1NDC(0.75);stats1->SetY2NDC(0.99);
+    stats2->SetX1NDC(0.72); stats2->SetX2NDC(0.99); stats2->SetY1NDC(0.75);stats2->SetY2NDC(0.99);
     
     leg->Draw();
   }
