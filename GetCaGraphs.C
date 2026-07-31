@@ -92,7 +92,8 @@ Bool_t ReadCa40PeakParam(const std::string &envpath,
 
 //void GetCaGraphs(const char* basename = "RUN45_Spatial_40Ca_Beamoff")
 //void GetCaGraphs(const char* basename = "RUN51_Spatial_40Ca_Beamoff")
-void GetCaGraphs(const char* basename = "RUN52_Spatial_Beamoff_550")
+//void GetCaGraphs(const char* basename = "RUN52_Spatial_Beamoff_550")
+void GetCaGraphs(const char* basename = "RUN69_450_P30_Beamoff42Ca")
 {
   const char* histname = "h2_scaled";
   std::string base = strip_ext_and_dir(basename);
@@ -209,8 +210,8 @@ void GetCaGraphs(const char* basename = "RUN52_Spatial_Beamoff_550")
     gr[i] = new TGraphErrors(n, &yval[0], &counts[i][0], 0, &errors[i][0]);
     gr[i]->SetName(Form("gr_ca%0.0f",ca_mass[i]));
     gr[i]->SetTitle(Form("%0.0fCa; YAG laser position [mm]; Peak count",ca_mass[i]));
-    gr[i]->SetMarkerColor(i+2);
-    gr[i]->SetLineColor(i+2);
+    gr[i]->SetMarkerColor(colors[i]);
+    gr[i]->SetLineColor(colors[i]);
     gr[i]->SetMarkerStyle(20);
     gr[i]->SetMarkerSize(1.);
     mg->Add(gr[i]);
