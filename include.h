@@ -40,10 +40,10 @@ Double_t mass_40Ca = 39.96259098;
 Double_t mass_42Ca = 41.95861801;
 Double_t mass_44Ca = 43.9554818;
 Double_t mass_48Ca = 47.952534;
-const Int_t num_ca = 3;
-Double_t ca_mass[num_ca] = {mass_40Ca, mass_44Ca, mass_48Ca};
-Double_t ca_abundance[num_ca] = {A40Ca, A44Ca, A48Ca};
-Double_t ca_wavelength[num_ca] = {Mu40Ca, Mu44Ca, Mu48Ca};
+const Int_t num_ca = 4;
+Double_t ca_mass[num_ca] = {mass_40Ca, mass_42Ca, mass_44Ca, mass_48Ca};
+Double_t ca_abundance[num_ca] = {A40Ca, A42Ca, A44Ca, A48Ca};
+Double_t ca_wavelength[num_ca] = {Mu40Ca, Mu42Ca, Mu44Ca, Mu48Ca};
 
 //Double_t baseline_xmin = 2.60;
 //Double_t baseline_xmax = 3.00;
@@ -57,6 +57,8 @@ Double_t trigger_delay =  0.1278; //[us]
 Double_t def_tof_40Ca = 4.124; // [us]
 
 Int_t n_rebin = 4; //TOF rebin
+
+int colors[] = {kRed, kOrange+3, kGreen, kBlue};
 
 namespace {
   inline bool starts_with_hash(const std::string& s){
