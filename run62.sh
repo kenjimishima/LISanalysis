@@ -6,7 +6,10 @@
 #runname=RUN51
 #runname=RUN52
 #runname=RUN53
-runname=RUN54
+#runname=RUN54
+#runname=RUN61
+#runname=RUN62
+runname=RUN69
 
 #Input files
 files=(
@@ -24,13 +27,29 @@ files=(
 # RUN53_Spatial_Beamoff_600.txt
 # RUN53_Spatial_Beamon48_550.txt
 # RUN53_Spatial_Beamon48_600.txt
-RUN54_Spatial_Beamoff_500.txt
-RUN54_Spatial_Beamoff_550.txt
-RUN54_Spatial_Beamoff_600.txt
-RUN54_Spatial_Beamon48_500_withlens.txt
-RUN54_Spatial_Beamon48_500_wolens.txt
-RUN54_Spatial_Beamon48_550_withlens.txt
-RUN54_Spatial_Beamon48_550_wolens.txt
+# RUN54_Spatial_Beamoff_500.txt
+# RUN54_Spatial_Beamoff_550.txt
+# RUN54_Spatial_Beamoff_600.txt
+# RUN54_Spatial_Beamon48_500_withlens.txt
+# RUN54_Spatial_Beamon48_500_wolens.txt
+# RUN54_Spatial_Beamon48_550_withlens.txt
+# RUN54_Spatial_Beamon48_550_wolens.txt
+#RUN61_Spatial_Beamoff_550_withlens_10mVscale_500mVscaleatcenter.txt
+#RUN61_Spatial_Beamon48_550_withlens_10mVscale_500mVscaleatcenter.txt
+#RUN62_Spatial_Beamoff_550_withlens_10mVscale.txt
+#RUN62_Spatial_Beamon48_550_withlens_10mVscale.txt
+#RUN62_Spatial_Beamoff_600_withlens_10mVscale.txt
+#RUN62_Spatial_Beamon48_600_withlens_10mVscale.txt
+#RUN62_Spatial_Beamoff_700_withlens_10mVscale.txt
+#RUN62_Spatial_Beamon48_700_withlens_10mVscale.txt
+RUN69_450_P30_Beamoff40Ca.txt
+RUN69_450_P30_Beamoff44Ca.txt
+RUN69_450_P30_Beamon40Ca.txt
+RUN69_450_P30_Beamon44Ca.txt
+RUN69_450_P30_Beamoff42Ca.txt
+RUN69_450_P30_Beamoff48Ca.txt
+RUN69_450_P30_Beamon42Ca.txt
+RUN69_450_P30_Beamon48Ca.txt
 )
 
 mkdir -p $runname/data
@@ -84,20 +103,17 @@ for f in "${files[@]}"; do
 done
 
 f0="${files[0]}"
+f1="${files[1]}"
+root -l -b -q "../LaserEffect.C(\"$f0\",\"$f1\")"
+
+f0="${files[2]}"
 f1="${files[3]}"
 root -l -b -q "../LaserEffect.C(\"$f0\",\"$f1\")"
 
-f0="${files[0]}"
-f1="${files[4]}"
-root -l -b -q "../LaserEffect.C(\"$f0\",\"$f1\")"
-
-f0="${files[1]}"
+f0="${files[4]}"
 f1="${files[5]}"
 root -l -b -q "../LaserEffect.C(\"$f0\",\"$f1\")"
 
-f0="${files[1]}"
-f1="${files[6]}"
-root -l -b -q "../LaserEffect.C(\"$f0\",\"$f1\")"
 
 : <<'EOF'
 EOF
