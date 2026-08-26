@@ -83,7 +83,8 @@ void FitMultiGauss(TH1D* h1, const char* envbasename)
   env.SetValue("FitResult.chi2", chi2);
   env.SetValue("FitResult.ndf", ndf);
   env.SetValue("FitResult.chi2_over_ndf", chi2ndf);
-  env.SetValue("FitResult.count_per_mV", 1./chi2ndf);
+  env.SetValue("FitResult.count_per_mV_per_bin", 1./chi2ndf);
+  env.SetValue("FitResult.nbin", n_rebin);
   env.SetValue("FitResult.base_voltage", base_voltage);
   env.WriteFile(outenv);
   std::cout << "Saved fit results to: " << outenv << std::endl;

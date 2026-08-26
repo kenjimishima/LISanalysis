@@ -5,6 +5,8 @@ TH2D* ReadTH2_XYMatrix_core(const char* inpath,
 			    const char* delim=" ,\t",
 			    bool draw=true)
 {
+  gStyle->SetPadRightMargin(0.18);
+
   std::ifstream ifs(inpath);
   if(!ifs.good()){ ::Error("ReadTH2_XYMatrix","Cannot open %s", inpath); return nullptr; }
 
@@ -60,9 +62,10 @@ TH2D* ReadTH2_XYMatrix_core(const char* inpath,
 
   h2->GetXaxis()->SetTitle("TOF [us]");
   h2->GetYaxis()->SetTitle("X position [mm]");
-  h2->GetZaxis()->SetTitle("Voltage [V]");
-
-  ::Info("ReadTH2_XYMatrix","Axis fixed: X=TOF [us], Y=X position [mm]");
+  h2->GetZaxis()->SetTitle("Voltage [mV]");
+  h2->GetZaxis()->CenterTitle();
+  //  gPad->SetRightMargin(0.18);
+  ::Info("ReadTH2_XYMatrix","Axis fixed: X=TOF [us], Y=X position [mm], Z= Voltage [mV]");
 
   if(draw){
     gStyle->SetOptStat(0);

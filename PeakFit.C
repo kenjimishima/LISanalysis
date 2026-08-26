@@ -2,7 +2,8 @@
 
 //void PeakFit(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
 //void PeakFit(const char* basename = "RUN51_Spatial_40Ca_Beamoff",
-void PeakFit(const char* basename = "RUN52_Spatial_Beamoff_550",
+//void PeakFit(const char* basename = "RUN52_Spatial_Beamoff_550",
+void PeakFit(const char* basename = "RUN72_Spatial_Beamon48_500_withlens_LD70mW_1mVscale",
 const int sliceIndex = 11)
 {
   const char* histname = "h2_scaled";
@@ -10,7 +11,7 @@ const int sliceIndex = 11)
   std::string indir  = "./root/scaled/";
   std::string infile  = base + "_Scaled";
   std::string outdir  = "./root/peak_fit/";
-  std::string outpath = outdir +  base + "_PeakFit.root";
+  std::string outpath = outdir +  base + "_slice_Y" + std::to_string(sliceIndex) + "_PeakFit.root";
   std::string envbasename = base + "_slice_Y" + std::to_string(sliceIndex) + "_PeakFit";
   std::string envdir  = "./results/";
   std::string figdir  = "./outputs/peak_fit/";

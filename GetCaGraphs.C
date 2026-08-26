@@ -93,7 +93,7 @@ Bool_t ReadCa40PeakParam(const std::string &envpath,
 //void GetCaGraphs(const char* basename = "RUN45_Spatial_40Ca_Beamoff")
 //void GetCaGraphs(const char* basename = "RUN51_Spatial_40Ca_Beamoff")
 //void GetCaGraphs(const char* basename = "RUN52_Spatial_Beamoff_550")
-void GetCaGraphs(const char* basename = "RUN69_450_P30_Beamoff42Ca")
+void GetCaGraphs(const char* basename = "RUN72_Spatial_Beamoff_500_withlens_LD70mW_1mVscale")
 {
   const char* histname = "h2_scaled";
   std::string base = strip_ext_and_dir(basename);
@@ -193,6 +193,7 @@ void GetCaGraphs(const char* basename = "RUN69_450_P30_Beamoff42Ca")
     DrawMassAxis(h1,peak_center,xmin,xmax,ymin,ymax);
     canv->SetGrid();
     canv->SaveAs(Form("%s%s_Y%d.png",figdir.c_str(),base.c_str(),iy));
+    canv->SaveAs(Form("%s%s_Y%d.root",outdir.c_str(),base.c_str(),iy));
     delete h1;
     delete canv;
   }
@@ -223,14 +224,13 @@ void GetCaGraphs(const char* basename = "RUN69_450_P30_Beamoff42Ca")
   c2->SetGrid();
   c2->SetLogy();
   mg->Draw("APL");
-  mg->GetYaxis()->SetRangeUser(0.1,1e6);
+  mg->GetYaxis()->SetRangeUser(0.1,1e7);
   leg->Draw();
   //--------------------------------------------------------------
   // 保存
   //--------------------------------------------------------------
   c2->Update();
   c2->SaveAs(figpath_png.c_str());
-  c2->Update();
   c2->SaveAs(figpath_pdf.c_str());
   TFile* fout = new TFile(outpath.c_str(), "RECREATE");
   for (int i = 0; i < num_ca; ++i) {

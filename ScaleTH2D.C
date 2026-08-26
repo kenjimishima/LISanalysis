@@ -1,8 +1,8 @@
 #include "include.h"
 #include "ErrorCalibration.C"
 
-void ScaleTH2D(const char* basename="RUN45_Spatial_40Ca_Beamoff",
-	       const char* calibname="RUN45_Spatial_40Ca_Beamoff",
+void ScaleTH2D(const char* basename="RUN72_Spatial_Beamoff_500_withlens_LD70mW_1mVscale",
+	       const char* calibname="RUN72_Spatial_Beamoff_500_withlens_LD70mW_1mVscale",
 	       const int sliceIndex = 1,
 	       const char* histname = "h2_subtracted")
 {
@@ -70,8 +70,12 @@ void ScaleTH2D(const char* basename="RUN45_Spatial_40Ca_Beamoff",
       double val = h2->GetBinContent(ix, iy);
       double newval = val * count_per_mV;
       double err = std::sqrt(std::abs(newval)); // sqrt(N)
-      h2_scaled->SetBinContent(ix, iy, newval);
-      h2_scaled->SetBinError(ix, iy, err);
+      if(bConvertToCount){
+	h2_scaled->SetBinContent(ix, iy, newval);
+	h2_scaled->SetBinError(ix, iy, err);
+      } else {
+	h2_scaled->SetBinError(ix, iy, err/newval);
+      }
     }
   }
 
