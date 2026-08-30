@@ -47,6 +47,19 @@ void FitMultiGauss(TH1D* h1, const char* envbasename)
   h1->Fit(fitfunc, "R");
   c2->Update();
 
+  ////////// baseline fit ///////////
+  Double_t baseline = 0.;
+  Double_t baseline_err = 0.;
+  Double_t baseline_sigma = 0.;
+  TF1* fpol0 = new TF1("f1pol0", "pol0", baseline_xmin,  baseline_xmax);
+  h1->Fit(fpol0, "WR");  
+  baseline = fpol0->GetParameter(0) / n_rebin; 
+  baseline_err = fpol0->GetParError(0) / TMath::Sqrt(n_rebin);
+  Double_t chi2base = fpol0->GetChisquare();
+  Int_t ndfbase = fpol0->GetNDF();
+  baseline_sigma = TMath::Sqrt(chi2base / ndfbase) / TMath::Sqrt(n_rebin);
+  /////////
+
   //refit with 3 sigma
   double mean = fitfunc->GetParameter(2);
   double sigma = fitfunc->GetParameter(3);
@@ -65,17 +78,20 @@ void FitMultiGauss(TH1D* h1, const char* envbasename)
   std::cout << "fitfunc ptr = " << fitfunc << std::endl;
   std::cout << "hist func ptr = "
 	    << h1->GetFunction("fitfunc") << std::endl;
-
   double chi2 = fitfunc->GetChisquare();
   double ndf  = fitfunc->GetNDF();
   double chi2ndf = chi2 / ndf ;
   double base_voltage = fitfunc->GetParameter(0)/n_rebin;
 
+
   // --- 結果表示 ---
   std::cout << "chi2 = " << chi2 << "\n";
   std::cout << "ndf  = " << ndf  << "\n";
   std::cout << "chi2/ndf = " << chi2ndf << "\n";
-  std::cout << "base voltage = " << base_voltage << std::endl;
+  std::cout << "base voltage (gaus) for no rebin = " << base_voltage << std::endl;
+
+  std::cout << "baseline (BG region) for no rebin = " << baseline << std::endl;
+  std::cout << "baseline sigma (BG region)= " << baseline_sigma << std::endl;
 
   // --- TEnvに保存 ---
   TString outenv = Form("./results/%s.env", envbasename);
@@ -83,25 +99,28 @@ void FitMultiGauss(TH1D* h1, const char* envbasename)
   env.SetValue("FitResult.chi2", chi2);
   env.SetValue("FitResult.ndf", ndf);
   env.SetValue("FitResult.chi2_over_ndf", chi2ndf);
-  env.SetValue("FitResult.count_per_mV_per_bin", 1./chi2ndf);
+  env.SetValue("FitResult.count_per_mV_per_rebin", 1./chi2ndf);
   env.SetValue("FitResult.nbin", n_rebin);
+  env.SetValue("FitResult.count_per_mV_per_1bin", 1./chi2ndf/TMath::Sqrt(n_rebin));
   env.SetValue("FitResult.base_voltage", base_voltage);
+  env.SetValue("FitResult.baseline_BG", baseline);
+  env.SetValue("FitResult.baseline_BG_sigma", baseline_sigma);
   env.WriteFile(outenv);
   std::cout << "Saved fit results to: " << outenv << std::endl;
 
   gPad->SetLogy();
   gPad->SetGrid();
   // --- 保存 ---
-  TString outpng = Form("./outputs/ErrorCalib/%s_fit%dG.png", h1->GetName(), ngaus);
-  TString outpdf = Form("./outputs/ErrorCalib/%s_fit%dG.pdf", h1->GetName(), ngaus);
-  TString outroot = Form("./outputs/ErrorCalib/%s_fit%dG.root", h1->GetName(), ngaus);
+  TString outpng = Form("./outputs/ErrorCalib/%s.png", envbasename);
+  TString outpdf = Form("./outputs/ErrorCalib/%s.pdf", envbasename);
+  TString outroot = Form("./outputs/ErrorCalib/%s.root", envbasename);
   c2->SaveAs(outpng);
   c2->SaveAs(outpdf);
   c2->SaveAs(outroot);
   std::cout << "Saved fit result:\n  " << outpng << "\n  " << outpdf << std::endl;
 }
 
-void ErrorCalibration(const char* basename = "RUN52_Spatial_Beamoff_550.txt",
+void ErrorCalibration(const char* basename = "RUN72_Spatial_Beamoff_500_withlens_LD70mW_1mVscale",
 		      //void ErrorCalibration(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
 		      //void ErrorCalibration(const char* basename = "RUN51_Spatial_40Ca_Beamoff",
 		      const int sliceIndex = 1,

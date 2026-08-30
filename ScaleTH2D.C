@@ -6,7 +6,6 @@ void ScaleTH2D(const char* basename="RUN72_Spatial_Beamoff_500_withlens_LD70mW_1
 	       const int sliceIndex = 1,
 	       const char* histname = "h2_subtracted")
 {
-
   std::string base  = strip_ext_and_dir(basename);
   std::string calib = strip_ext_and_dir(calibname);
   std::string inpath  = "./root/baseline/" + base + "_Baseline.root";
@@ -15,7 +14,6 @@ void ScaleTH2D(const char* basename="RUN72_Spatial_Beamoff_500_withlens_LD70mW_1
   std::string outdir  = "./root/scaled/";
   std::string outpath = outdir + base + "_Scaled.root";  
   if (gSystem->AccessPathName(outdir.c_str())) gSystem->mkdir(outdir.c_str(), true);
-
   
   //----------------------------------------------------------------
   // 1. 入力ROOTファイルを開く
@@ -49,12 +47,14 @@ void ScaleTH2D(const char* basename="RUN72_Spatial_Beamoff_500_withlens_LD70mW_1
   Double_t chi2 = env.GetValue("FitResult.chi2", 0.0); 
   Double_t ndf  = env.GetValue("FitResult.ndf", 0.0); 
   Double_t chi2_over_ndf  = env.GetValue("FitResult.chi2_over_ndf", 0.0); 
-  Double_t count_per_mV  = env.GetValue("FitResult.count_per_mV", 0.0); 
+  Double_t count_per_mV  = env.GetValue("FitResult.count_per_mV_per_1bin", 0.0); 
   Double_t base_voltage = env.GetValue("FitResult.base_voltage", -999999.);
-
-  double scale = 1./chi2_over_ndf;
-  std::cout << "Base voltage from env: " << base_voltage << std::endl;
+  Double_t baseline = env.GetValue("FitResult.baseline_BG", -999999.);
+  Double_t baseline_sigma = env.GetValue("FitResult.baseline_BG_sigma", -999999.);
+  //  double scale = 1./chi2_over_ndf;
+  //  std::cout << "Base voltage from env: " << base_voltage << std::endl;
   std::cout << "Count per mV: " << count_per_mV << std::endl;
+  std::cout << "Baseline sigma: " << baseline_sigma << std::endl;
 
   //----------------------------------------------------------------
   // 4. 新しいヒストグラムを作成してスケール変換
@@ -74,19 +74,24 @@ void ScaleTH2D(const char* basename="RUN72_Spatial_Beamoff_500_withlens_LD70mW_1
 	h2_scaled->SetBinContent(ix, iy, newval);
 	h2_scaled->SetBinError(ix, iy, err);
       } else {
-	h2_scaled->SetBinError(ix, iy, err/newval);
+	h2_scaled->SetBinContent(ix, iy, val);	
+	Double_t count_error = err/newval*val;
+	Double_t comb_error = TMath::Sqrt(count_error*count_error + baseline_sigma*baseline_sigma);
+	h2_scaled->SetBinError(ix, iy, comb_error);
+	cout << ix <<" "<< iy <<" "<< val<<" "<<newval<< " "<<err<<" "<<comb_error<<endl;
       }
     }
   }
 
-  h2_scaled->SetTitle(Form("%s (scaled by %.3f)", histname, scale));
+  h2_scaled->SetTitle(Form("%s (1 meV with non-rebin corresponds to %.1f counts); TOF [us]; X position [mm]; Voltage [mV]", histname, count_per_mV));
 
-  // --- 最初のYビンを投影（ProjectionX） ---
+  // --- Yビンを投影（ProjectionX） ---
+  TCanvas* c2 = new TCanvas("c2", "TH2 Histogram Projected", 900, 700);
   TH1D* h1 = h2_scaled->ProjectionX("h1_scaled", sliceIndex, sliceIndex);
   h1->Draw("EH");
   cout << save_envbasename<<endl;
   FitMultiGauss(h1, save_envbasename.c_str());
-
+  //  h1->Delete();
   //----------------------------------------------------------------
   // 5. 出力ROOTファイルに保存
   //----------------------------------------------------------------

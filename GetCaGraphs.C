@@ -76,7 +76,10 @@ void DrawMassAxis(TH1* h, Double_t tof_40Ca, Double_t xmin, Double_t xmax, Doubl
 Bool_t ReadCa40PeakParam(const std::string &envpath,
 			 Double_t &A,
 			 Double_t &mean,
-			 Double_t &sigma)
+			 Double_t &sigma,
+			 Double_t &mean_def,
+			 Double_t &sigma_def
+			 )
 {
   TEnv env;
   Int_t status = env.ReadFile(envpath.c_str(), kEnvLocal);
@@ -84,16 +87,33 @@ Bool_t ReadCa40PeakParam(const std::string &envpath,
     std::cerr << "Failed to read " << envpath << std::endl;
     return kFALSE;
   }
-  A     = env.GetValue("Ca40PeakTOF.A",     -1.);
-  mean  = env.GetValue("Ca40PeakTOF.Mean",  -1.);
-  sigma = env.GetValue("Ca40PeakTOF.Sigma", -1.);
+  A     = env.GetValue("Ca40PeakTOF.A",     -999999.);
+  mean  = env.GetValue("Ca40PeakTOF.Mean",  -999999.);
+  sigma = env.GetValue("Ca40PeakTOF.Sigma", -999999.);
+  mean_def  = env.GetValue("Ca40PeakTOF.Mean.Default",  -999999.);
+  sigma_def = env.GetValue("Ca40PeakTOF.Sigma.Default", -999999.);
+  return kTRUE;
+}
+
+Bool_t ReadBaselineSigma(const std::string &envpath,
+			 Double_t &sigma
+			 )
+{
+  TEnv env;
+  Int_t status = env.ReadFile(envpath.c_str(), kEnvLocal);
+  if (status < 0) {
+    std::cerr << "Failed to read " << envpath << std::endl;
+    return kFALSE;
+  }
+  sigma = env.GetValue("FitResult.baseline_BG_sigma", -999999.);
   return kTRUE;
 }
 
 //void GetCaGraphs(const char* basename = "RUN45_Spatial_40Ca_Beamoff")
 //void GetCaGraphs(const char* basename = "RUN51_Spatial_40Ca_Beamoff")
 //void GetCaGraphs(const char* basename = "RUN52_Spatial_Beamoff_550")
-void GetCaGraphs(const char* basename = "RUN72_Spatial_Beamoff_500_withlens_LD70mW_1mVscale")
+//void GetCaGraphs(const char* basename = "RUN72_Spatial_Beamoff_500_withlens_LD70mW_1mVscale")
+void GetCaGraphs(const char* basename = "RUN72_Spatial_Beamoff_500_withlens_LD70mW_500mVscale",	const int sliceIndex = 1)
 {
   const char* histname = "h2_scaled";
   std::string base = strip_ext_and_dir(basename);
@@ -104,6 +124,7 @@ void GetCaGraphs(const char* basename = "RUN72_Spatial_Beamoff_500_withlens_LD70
   std::string outpath = outdir +  base + "_CaGraph.root";
   std::string textdir  = "./text/ca_graph/";
   std::string figdir  = "./outputs/ca_graph/";
+  std::string readenvpath = envdir + base + "_slice_Y" + std::to_string(sliceIndex) + ".env";
   std::string figpath_pdf = figdir + base + ".pdf";
   std::string figpath_png = figdir + base + ".png";
   if (gSystem->AccessPathName(figdir.c_str())) gSystem->mkdir(figdir.c_str(), true);
@@ -140,15 +161,26 @@ void GetCaGraphs(const char* basename = "RUN72_Spatial_Beamoff_500_withlens_LD70
     TCanvas* canv = new TCanvas("c","c");
     canv->SetLogy();
     h1->Draw("eh");
-    
+
     //--------------------------------------------------------------
     // Get parameters
     //--------------------------------------------------------------  
     std::string envname = envdir + base + "_slice_Y" + std::to_string(iy) + "_PeakFit.env";
     Double_t Ca40_A, Ca40_mean, Ca40_sigma;
-    ReadCa40PeakParam(envname, Ca40_A, Ca40_mean, Ca40_sigma);
+    Double_t Ca40_mean_def, Ca40_sigma_def;
+    Double_t baseline_sigma;
+    ReadCa40PeakParam(envname, Ca40_A, Ca40_mean, Ca40_sigma, Ca40_mean_def, Ca40_sigma_def);
+    ReadBaselineSigma(readenvpath, baseline_sigma);
+    cout <<"Ca40 fit A = " << Ca40_A <<" , baseline sigma =  "<<baseline_sigma <<endl;
+
     Double_t peak_center  = Ca40_mean;
     Double_t sigma = Ca40_sigma;
+    //Is fitting reasonable?
+    if(Ca40_A < PeakFitThreshold * baseline_sigma){
+      peak_center  = Ca40_mean_def;
+      sigma = Ca40_sigma_def;
+      cout << "Default setting value is used for slice "<<iy<<endl;
+    }
     cout <<"peak center ="<< peak_center <<", sigma = "<< sigma<<endl;
 
     // --- 領域定義 ---
@@ -173,8 +205,15 @@ void GetCaGraphs(const char* basename = "RUN72_Spatial_Beamoff_500_withlens_LD70
       Int_t bmax = h1->FindBin(ca_xmax[i]);
 
       integ[i] = h1->IntegralAndError(bmin, bmax, err[i]);
-      counts[i].push_back(integ[i]);
-      errors[i].push_back(err[i]);
+      // In mV
+      // counts[i].push_back(integ[i]);
+      // errors[i].push_back(err[i]);
+      // h1->GetYaxis()->SetTitle("Voltage [mV]");
+      // In nC
+      Double_t bin_width = h1->GetBinWidth(1)*1000.; // [ns] 
+      counts[i].push_back(integ[i] * bin_width / impedance);
+      errors[i].push_back(err[i] * bin_width / impedance);
+      h1->GetYaxis()->SetTitle("Charge [pC]");
 
       TLine* line_min = new TLine(ca_xmin[i], ymin, ca_xmin[i], ymax);
       TLine* line_max = new TLine(ca_xmax[i], ymin, ca_xmax[i], ymax);
@@ -203,7 +242,7 @@ void GetCaGraphs(const char* basename = "RUN72_Spatial_Beamoff_500_withlens_LD70
   //--------------------------------------------------------------
   TGraphErrors* gr[num_ca];
   TMultiGraph* mg = new TMultiGraph();
-  mg->SetTitle(Form("%s; YAG laser position [mm]; Peak count",base.c_str()));
+  mg->SetTitle(Form("%s; YAG laser position [mm]; Charge [pC]",base.c_str()));
   TLegend* leg = new TLegend(0.7, 0.8, 0.95, 0.90,"");
   Int_t n = yval.size();
 
@@ -224,7 +263,7 @@ void GetCaGraphs(const char* basename = "RUN72_Spatial_Beamoff_500_withlens_LD70
   c2->SetGrid();
   c2->SetLogy();
   mg->Draw("APL");
-  mg->GetYaxis()->SetRangeUser(0.1,1e7);
+  mg->GetYaxis()->SetRangeUser(0.001,1e4); 
   leg->Draw();
   //--------------------------------------------------------------
   // 保存

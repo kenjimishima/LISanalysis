@@ -63,6 +63,11 @@ for f in "${files[@]}"; do
 done
 cd $runname
 
+f="${files[0]}"
+nrow=$(wc -l < "./data/$f")
+ncol=$(awk 'NR==1 { print NF; exit }' "./data/$f")
+echo "rows=$nrow"
+echo "cols=$ncol"
 
 #Create ROOT files
 for f in "${files[@]}"; do
@@ -73,16 +78,18 @@ for f in "${files[@]}"; do
     root -l -b -q "../BaselineCorrection.C(\"$f\")"
 done
 
-#Normalization to counts and errors to be chi2/ndf of unity, using Yslice of file[0]
+#Normalization to counts and errors to be chi2/ndf of unity, using Yslice of each run
 Yslice=1
-f0="${files[0]}"
+#f0="${files[0]}"
+for f in "${files[@]}"; do
 echo -e "\nCalibration slice $Yslice of $f ..."
-root -l -b -q "../ErrorCalibration.C(\"$f0\",$Yslice)"
+root -l -b -q "../ErrorCalibration.C(\"$f\",$Yslice)"
+done
 
 #Scale TOF 
 for f in "${files[@]}"; do
     echo -e "\nStart Scaling $f ..."
-    root -l -b -q "../ScaleTH2D.C(\"$f\",\"$f0\",$Yslice)"
+    root -l -b -q "../ScaleTH2D.C(\"$f\",\"$f\",$Yslice)"
 done
 
 #Draw TOF histogram and fit 40Ca peak
@@ -102,7 +109,6 @@ for f in "${files[@]}"; do
     done
 done
 EOF
-
 
 #Get Ca peak ratios
 for f in "${files[@]}"; do

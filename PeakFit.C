@@ -3,8 +3,8 @@
 //void PeakFit(const char* basename = "RUN45_Spatial_40Ca_Beamoff",
 //void PeakFit(const char* basename = "RUN51_Spatial_40Ca_Beamoff",
 //void PeakFit(const char* basename = "RUN52_Spatial_Beamoff_550",
-void PeakFit(const char* basename = "RUN72_Spatial_Beamon48_500_withlens_LD70mW_1mVscale",
-const int sliceIndex = 11)
+void PeakFit(const char* basename = "RUN72_Spatial_Beamoff_500_withlens_LD70mW_500mVscale",
+const int sliceIndex = 10)
 {
   const char* histname = "h2_scaled";
   std::string base = strip_ext_and_dir(basename);
@@ -47,8 +47,8 @@ const int sliceIndex = 11)
   double xmax_single = mean * 1.03;
   auto [peak_bin, peak_val] = FindMaxBinAndValueInRange(h1, xmin_single, xmax_single);
   Double_t peak_center = h1->GetXaxis()->GetBinCenter(peak_bin);
-  xmin_single = peak_center - 3*def_sigma;
-  xmax_single = peak_center + 3*def_sigma;
+  xmin_single = peak_center - 9*def_sigma;
+  xmax_single = peak_center + 9*def_sigma;
   //  cout <<  peak_bin << " "<< peak_val<<endl;
   cout << "Peak center = "<< peak_center <<" [us] "<<endl;
   cout << "Fitting region : "<<  xmin_single<<" - "<<xmax_single<< " [us]"<<endl;
@@ -87,6 +87,8 @@ const int sliceIndex = 11)
   env.SetValue("Ca40PeakTOF.Mean.Error", ep1);
   env.SetValue("Ca40PeakTOF.Sigma", p2);
   env.SetValue("Ca40PeakTOF.Sigma.Error", ep2);
+  env.SetValue("Ca40PeakTOF.Mean.Default", mean);
+  env.SetValue("Ca40PeakTOF.Sigma.Default", def_sigma);
   env.WriteFile(outenv);
   std::cout << "Saved fit results to: " << outenv << std::endl;
 

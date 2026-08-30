@@ -27,6 +27,9 @@ gStyle->SetOptFit(1111);
 gStyle->SetOptStat(1001111);
 
 Bool_t bConvertToCount = kFALSE; //true: convet voltage to count, false: use voltage [mV] 
+Double_t PeakFitThreshold = 5.; //Use default value if the peak is less than this x sigma  
+
+Double_t impedance = 50.; //Input impedance [Ohm]
 
 Double_t A40Ca = 0.969;
 Double_t A42Ca = 0.00647;
@@ -53,7 +56,8 @@ Double_t ca_wavelength[num_ca] = {Mu40Ca, Mu42Ca, Mu44Ca, Mu48Ca};
 //Double_t baseline_xmax = 5.50;
 Double_t baseline_xmin = 4.6;
 Double_t baseline_xmax = 4.8;
-Double_t def_sigma = 0.01; // [us]
+//Double_t def_sigma = 0.01; // [us]
+Double_t def_sigma = 0.0033; // [us]
 
 //TOF parameters
 Double_t trigger_delay =  0.1278; //[us]
