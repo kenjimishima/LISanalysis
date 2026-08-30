@@ -95,7 +95,7 @@ done
 #Draw TOF histogram and fit 40Ca peak
 for f in "${files[@]}"; do
     echo -e "\nStart making TOF histogram $f ..."
-    for ((Yslice=1; Yslice<=17; Yslice++)); do
+    for ((Yslice=1; Yslice<ncol; Yslice++)); do
 	root -l -b -q "../PeakFit.C(\"$f\",$Yslice)"
     done
 done
@@ -104,7 +104,7 @@ done
 #Identity peaks and integrate their counts
 for f in "${files[@]}"; do
     f0="${files[0]}"
-    for ((Yslice=1; Yslice<=17; Yslice++)); do
+    for ((Yslice=1; Yslice<=ncol; Yslice++)); do
 	root -l -b -q "../PeakFinder.C(\"$f0\",$Yslice)"
     done
 done
@@ -116,7 +116,6 @@ for f in "${files[@]}"; do
     root -l -b -q "../GetCaGraphs.C(\"$f\")"
     root -l -b -q "../RatioGraph.C(\"$f\")"
 done
-
 
 f0="${files[0]}"
 f1="${files[1]}"

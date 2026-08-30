@@ -27,7 +27,7 @@ gStyle->SetOptFit(1111);
 gStyle->SetOptStat(1001111);
 
 Bool_t bConvertToCount = kFALSE; //true: convet voltage to count, false: use voltage [mV] 
-Double_t PeakFitThreshold = 5.; //Use default value if the peak is less than this x sigma  
+Double_t PeakFitThreshold = 10.; //Use default value if the peak is less than this x sigma  
 
 Double_t impedance = 50.; //Input impedance [Ohm]
 

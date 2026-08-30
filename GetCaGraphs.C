@@ -150,7 +150,7 @@ void GetCaGraphs(const char* basename = "RUN72_Spatial_Beamoff_500_withlens_LD70
   //--------------------------------------------------------------  
   for (Int_t iy = 1; iy <= ny; ++iy) {
     TH1D* h1 = h2->ProjectionX(Form("h1_Y%d", iy), iy, iy);
-    h1->SetTitle("");
+    h1->SetTitle(";TOF [us]; Voltage [mV]");
     if (!h1) {
       cerr << "Can not read" << h1->GetName()<<endl;
       exit(0);
@@ -166,22 +166,22 @@ void GetCaGraphs(const char* basename = "RUN72_Spatial_Beamoff_500_withlens_LD70
     // Get parameters
     //--------------------------------------------------------------  
     std::string envname = envdir + base + "_slice_Y" + std::to_string(iy) + "_PeakFit.env";
-    Double_t Ca40_A, Ca40_mean, Ca40_sigma;
-    Double_t Ca40_mean_def, Ca40_sigma_def;
+    Double_t Ca40_A = 0., Ca40_mean=0., Ca40_sigma=0.;
+    Double_t Ca40_mean_def=0., Ca40_sigma_def=0.;
     Double_t baseline_sigma;
     ReadCa40PeakParam(envname, Ca40_A, Ca40_mean, Ca40_sigma, Ca40_mean_def, Ca40_sigma_def);
     ReadBaselineSigma(readenvpath, baseline_sigma);
-    cout <<"Ca40 fit A = " << Ca40_A <<" , baseline sigma =  "<<baseline_sigma <<endl;
+    cout <<"slice = "<<iy<<", Ca40 fit A = " << Ca40_A <<", sigma = "<<Ca40_sigma<<", baseline sigma = "<<baseline_sigma <<endl;
 
     Double_t peak_center  = Ca40_mean;
     Double_t sigma = Ca40_sigma;
     //Is fitting reasonable?
-    if(Ca40_A < PeakFitThreshold * baseline_sigma){
+    if(Ca40_A < PeakFitThreshold * baseline_sigma || Ca40_sigma < Ca40_sigma_def * 0.5){
       peak_center  = Ca40_mean_def;
       sigma = Ca40_sigma_def;
       cout << "Default setting value is used for slice "<<iy<<endl;
     }
-    cout <<"peak center ="<< peak_center <<", sigma = "<< sigma<<endl;
+    cout <<"peak center = "<< peak_center <<", sigma = "<< sigma<<endl;
 
     // --- 領域定義 ---
     Double_t ca_centers[num_ca];
@@ -193,7 +193,7 @@ void GetCaGraphs(const char* basename = "RUN72_Spatial_Beamoff_500_withlens_LD70
     std::vector<TLine*> lines;
     Double_t xmin = MasstoTOF(draw_mass_min, peak_center);
     Double_t xmax = MasstoTOF(draw_mass_max, peak_center);
-    Double_t ymin = 0.01;
+    Double_t ymin = 1.e-4;
     Double_t ymax = h1->GetMaximum() * 5.;
     
     // --- 積分と誤差 ---
@@ -208,12 +208,10 @@ void GetCaGraphs(const char* basename = "RUN72_Spatial_Beamoff_500_withlens_LD70
       // In mV
       // counts[i].push_back(integ[i]);
       // errors[i].push_back(err[i]);
-      // h1->GetYaxis()->SetTitle("Voltage [mV]");
       // In nC
       Double_t bin_width = h1->GetBinWidth(1)*1000.; // [ns] 
       counts[i].push_back(integ[i] * bin_width / impedance);
       errors[i].push_back(err[i] * bin_width / impedance);
-      h1->GetYaxis()->SetTitle("Charge [pC]");
 
       TLine* line_min = new TLine(ca_xmin[i], ymin, ca_xmin[i], ymax);
       TLine* line_max = new TLine(ca_xmax[i], ymin, ca_xmax[i], ymax);
@@ -264,6 +262,7 @@ void GetCaGraphs(const char* basename = "RUN72_Spatial_Beamoff_500_withlens_LD70
   c2->SetLogy();
   mg->Draw("APL");
   mg->GetYaxis()->SetRangeUser(0.001,1e4); 
+  //  mg->GetYaxis()->SetTitleOffset(1.0); 
   leg->Draw();
   //--------------------------------------------------------------
   // 保存

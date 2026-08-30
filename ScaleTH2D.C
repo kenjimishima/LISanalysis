@@ -78,7 +78,6 @@ void ScaleTH2D(const char* basename="RUN72_Spatial_Beamoff_500_withlens_LD70mW_1
 	Double_t count_error = err/newval*val;
 	Double_t comb_error = TMath::Sqrt(count_error*count_error + baseline_sigma*baseline_sigma);
 	h2_scaled->SetBinError(ix, iy, comb_error);
-	cout << ix <<" "<< iy <<" "<< val<<" "<<newval<< " "<<err<<" "<<comb_error<<endl;
       }
     }
   }
