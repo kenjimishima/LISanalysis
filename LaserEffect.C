@@ -1,13 +1,13 @@
 #include "include.h"
 
-void LaserEffect(const char* basename1 = "RUN51_Spatial_40Ca_Beamoff",
-		 const char* basename2 = "RUN51_Spatial_40Ca_Beamon48" )
+void LaserEffect(const char* basename1 = "RUN72_Spatial_Beamoff_500_withlens_LD70mW",
+		 const char* basename2 = "RUN72_Spatial_Beamon48_500_withlens_LD70mW")
 {
+  std::string indir  = "./root/ca_graph_combined/";
   std::string base1 = strip_ext_and_dir(basename1);
-  std::string infile1 = base1 + "_CaGraph.root";
+  std::string infile1 = base1 + "_CaGraphCombined.root";
   std::string base2 = strip_ext_and_dir(basename2);
-  std::string infile2 = base2 + "_CaGraph.root";
-  std::string indir  = "./root/ca_graph/";
+  std::string infile2 = base2 + "_CaGraphCombined.root";
   std::string inpath1 = indir + infile1;
   std::string inpath2 = indir + infile2;
   std::string outdir  = "./root/laser_effect/";
@@ -27,7 +27,7 @@ void LaserEffect(const char* basename1 = "RUN51_Spatial_40Ca_Beamoff",
   TGraphErrors* gr1[num_ca];
   //--- グラフを読み込み ---
   for (int i = 0; i < num_ca; i++) {
-    TString gr_name = Form("gr_ca%0.0f",ca_mass[i]);
+    TString gr_name = Form("gr_comb_ca%0.0f",ca_mass[i]);
     gr1[i] = (TGraphErrors*)fin1->Get(gr_name);
     if (!gr1[i]) {
       Error("RatioGraph", "Cannot get %s in %s", gr_name.Data(), inpath1.c_str());
@@ -44,7 +44,7 @@ void LaserEffect(const char* basename1 = "RUN51_Spatial_40Ca_Beamoff",
   TGraphErrors* gr2[num_ca];
   //--- グラフを読み込み ---
   for (int i = 0; i < num_ca; i++) {
-    TString gr_name = Form("gr_ca%0.0f",ca_mass[i]);
+    TString gr_name = Form("gr_comb_ca%0.0f",ca_mass[i]);
     gr2[i] = (TGraphErrors*)fin2->Get(gr_name);
     if (!gr2[i]) {
       Error("RatioGraph", "Cannot get %s in %s", gr_name.Data(), inpath2.c_str());
@@ -52,12 +52,12 @@ void LaserEffect(const char* basename1 = "RUN51_Spatial_40Ca_Beamoff",
     }
   }
   
-  TCanvas* c1 = new TCanvas("c1", "Laser Effect", 800, 900);
+  TCanvas* c1 = new TCanvas("c1", "Laser Effect", 1200, 800);
   gr1[0]->Draw("goff");
   double gr_max = gr1[0]->GetYaxis()->GetXmax();
-  cout << gr_max<<endl;
-  c1->Divide(1,3);
-  TLegend* leg = new TLegend(0.65, 0.5, 0.85, 0.7,"");
+  cout <<"Maximum value: "<< gr_max <<" [pC]" << endl;
+  c1->Divide(2,2);
+  TLegend* leg = new TLegend(0.63, 0.5, 0.88, 0.7,"");
   leg->AddEntry(gr1[0], "Without Laser", "pl");
   leg->AddEntry(gr2[0], "With    Laser", "pl");
 
@@ -68,16 +68,16 @@ void LaserEffect(const char* basename1 = "RUN51_Spatial_40Ca_Beamoff",
   for (int i = 0; i < num_ca; i++) {
     funcgaus1[i] = new TF1(Form("func_%s",gr1[i]->GetName()),"gaus+[3]");
     funcgaus2[i] = new TF1(Form("func_%s",gr2[i]->GetName()),"gaus+[3]");
-    funcgaus1[i]->SetParNames("A","Mean","Sigma","Offset");
-    funcgaus2[i]->SetParNames("A","Mean","Sigma","Offset");
+    funcgaus1[i]->SetParNames("A","Mean","Sigma","Baseline");
+    funcgaus2[i]->SetParNames("A","Mean","Sigma","Baseline");
     funcgaus1[i]->SetParameters(gr_max*ca_abundance[i], 50., 10., 0.);
     funcgaus2[i]->SetParameters(gr_max*ca_abundance[i], 50., 10., 0.);
     funcgaus1[i]->SetParLimits(0,0.,1.e7);
-    funcgaus1[i]->SetParLimits(1,20,60);
-    funcgaus1[i]->SetParLimits(2,3.,30.);
+    funcgaus1[i]->SetParLimits(1,30,60);
+    funcgaus1[i]->SetParLimits(2,1.,30.);
     funcgaus2[i]->SetParLimits(0,0.,1.e7);
     funcgaus2[i]->SetParLimits(1,20,60);
-    funcgaus2[i]->SetParLimits(2,3.,30.);
+    funcgaus2[i]->SetParLimits(2,1.,30.);
 
     gr1[i]->SetLineColor(kBlack);
     gr1[i]->SetMarkerColor(kBlack);
