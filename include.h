@@ -26,10 +26,6 @@
 gStyle->SetOptFit(1111);
 gStyle->SetOptStat(1001111);
 
-Bool_t bConvertToCount = kFALSE; //true: convet voltage to count, false: use voltage [mV] 
-Double_t PeakFitThreshold = 10.; //Use default value if the peak is less than this x sigma  
-
-Double_t impedance = 50.; //Input impedance [Ohm]
 
 Double_t A40Ca = 0.969;
 Double_t A42Ca = 0.00647;
@@ -50,6 +46,14 @@ Double_t ca_mass[num_ca] = {mass_40Ca, mass_42Ca, mass_44Ca, mass_48Ca};
 Double_t ca_abundance[num_ca] = {A40Ca, A42Ca, A44Ca, A48Ca};
 Double_t ca_wavelength[num_ca] = {Mu40Ca, Mu42Ca, Mu44Ca, Mu48Ca};
 
+Double_t impedance = 50.; //Input impedance [Ohm]
+
+Bool_t bConvertToCount = kFALSE; //true: convet voltage to count, false: use voltage [mV] 
+Bool_t bUseDefaultSigmaRegion = kTRUE; //true: Use default sigma to define the integral region, false: use fitting results 
+Double_t PeakFitThreshold = 10.; //Use default value if the peak is less than this x sigma  
+Double_t SigmaSaturated = 1.5; //se this x def_sigma if the fitting sigma is more than. 
+Double_t PeakSaturated = 8.0; //Use larger dynamic range in case over this [pC]
+
 //Double_t baseline_xmin = 2.60;
 //Double_t baseline_xmax = 3.00;
 //Double_t baseline_xmin = 5.00;
@@ -57,7 +61,7 @@ Double_t ca_wavelength[num_ca] = {Mu40Ca, Mu42Ca, Mu44Ca, Mu48Ca};
 Double_t baseline_xmin = 4.6;
 Double_t baseline_xmax = 4.8;
 //Double_t def_sigma = 0.01; // [us]
-Double_t def_sigma = 0.0033; // [us]
+Double_t def_sigma = 0.0040; // [us]
 
 //TOF parameters
 Double_t trigger_delay =  0.1278; //[us]

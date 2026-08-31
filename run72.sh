@@ -57,6 +57,12 @@ RUN72_Spatial_Beamoff_500_withlens_LD70mW_500mVscale.txt
 RUN72_Spatial_Beamon48_500_withlens_LD70mW_500mVscale.txt
 )
 
+fcomb="RUN72_Spatial_Beamoff_500_withlens_LD70mW"
+RUN72_Spatial_Beamon48_500_withlens_LD70mW_1mVscale.txt
+RUN72_Spatial_Beamoff_500_withlens_LD70mW_500mVscale.txt
+RUN72_Spatial_Beamon48_500_withlens_LD70mW_500mVscale.txt
+
+
 mkdir -p $runname/data
 for f in "${files[@]}"; do
   cp "./data/$f" "$runname/data/"
@@ -114,8 +120,9 @@ EOF
 for f in "${files[@]}"; do
     echo -e "\nStart Making Graphs $f ..."
     root -l -b -q "../GetCaGraphs.C(\"$f\")"
-    root -l -b -q "../RatioGraph.C(\"$f\")"
 done
+
+root -l -b -q "../RatioGraph.C(\"$f\")"
 
 f0="${files[0]}"
 f1="${files[1]}"

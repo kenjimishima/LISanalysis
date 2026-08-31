@@ -113,7 +113,7 @@ Bool_t ReadBaselineSigma(const std::string &envpath,
 //void GetCaGraphs(const char* basename = "RUN51_Spatial_40Ca_Beamoff")
 //void GetCaGraphs(const char* basename = "RUN52_Spatial_Beamoff_550")
 //void GetCaGraphs(const char* basename = "RUN72_Spatial_Beamoff_500_withlens_LD70mW_1mVscale")
-void GetCaGraphs(const char* basename = "RUN72_Spatial_Beamoff_500_withlens_LD70mW_500mVscale",	const int sliceIndex = 1)
+void GetCaGraphs(const char* basename = "RUN72_Spatial_Beamoff_500_withlens_LD70mW_1mVscale",	const int sliceIndex = 1)
 {
   const char* histname = "h2_scaled";
   std::string base = strip_ext_and_dir(basename);
@@ -175,12 +175,20 @@ void GetCaGraphs(const char* basename = "RUN72_Spatial_Beamoff_500_withlens_LD70
 
     Double_t peak_center  = Ca40_mean;
     Double_t sigma = Ca40_sigma;
+
     //Is fitting reasonable?
+    if(Ca40_sigma > Ca40_sigma_def * SigmaSaturated){
+      sigma = Ca40_sigma_def * SigmaSaturated;
+      cout << "Sigma is too large(saturated?). Set as x2 of default sigma"<<endl;
+    }
     if(Ca40_A < PeakFitThreshold * baseline_sigma || Ca40_sigma < Ca40_sigma_def * 0.5){
       peak_center  = Ca40_mean_def;
       sigma = Ca40_sigma_def;
       cout << "Default setting value is used for slice "<<iy<<endl;
     }
+    //use constant sigma of sigma_def
+    if(bUseDefaultSigmaRegion)    sigma = Ca40_sigma_def;
+
     cout <<"peak center = "<< peak_center <<", sigma = "<< sigma<<endl;
 
     // --- 領域定義 ---
@@ -262,7 +270,7 @@ void GetCaGraphs(const char* basename = "RUN72_Spatial_Beamoff_500_withlens_LD70
   c2->SetLogy();
   mg->Draw("APL");
   mg->GetYaxis()->SetRangeUser(0.001,1e4); 
-  //  mg->GetYaxis()->SetTitleOffset(1.0); 
+  mg->GetYaxis()->SetTitleOffset(1.1); 
   leg->Draw();
   //--------------------------------------------------------------
   // 保存
