@@ -63,7 +63,20 @@ void LaserEffect(const char* basename1 = "RUN72_Spatial_Beamoff_500_withlens_LD7
 
   TF1* funcgaus1[num_ca];
   TF1* funcgaus2[num_ca];
-  
+  Double_t peak1[num_ca];
+  Double_t peak2[num_ca];
+  Double_t mean1[num_ca];
+  Double_t mean2[num_ca];
+  Double_t sigma1[num_ca];
+  Double_t sigma2[num_ca];
+
+  Double_t peak1_err[num_ca];
+  Double_t peak2_err[num_ca];
+  Double_t mean1_err[num_ca];
+  Double_t mean2_err[num_ca];
+  Double_t sigma1_err[num_ca];
+  Double_t sigma2_err[num_ca];
+
   TMultiGraph* mg[num_ca];
   for (int i = 0; i < num_ca; i++) {
     funcgaus1[i] = new TF1(Form("func_%s",gr1[i]->GetName()),"gaus+[3]");
@@ -97,6 +110,19 @@ void LaserEffect(const char* basename1 = "RUN72_Spatial_Beamoff_500_withlens_LD7
     mg[i]->GetYaxis()->SetRangeUser(ymin,ymax*1.5);
     gr1[i]->Fit(funcgaus1[i]);
     gr2[i]->Fit(funcgaus2[i]);
+    peak1[i] = funcgaus1[i]->GetParameter(0);
+    peak2[i] = funcgaus2[i]->GetParameter(0);
+    mean1[i] = funcgaus1[i]->GetParameter(1);
+    mean2[i] = funcgaus2[i]->GetParameter(1);
+    sigma1[i] = funcgaus1[i]->GetParameter(2);
+    sigma2[i] = funcgaus2[i]->GetParameter(2);
+
+    peak1_err[i] = funcgaus1[i]->GetParError(0);
+    peak2_err[i] = funcgaus2[i]->GetParError(0);
+    mean1_err[i] = funcgaus1[i]->GetParError(1);
+    mean2_err[i] = funcgaus2[i]->GetParError(1);
+    sigma1_err[i] = funcgaus1[i]->GetParError(2);
+    sigma2_err[i] = funcgaus2[i]->GetParError(2);
 
     gPad->SetGrid();
     gPad->Update();
@@ -109,6 +135,13 @@ void LaserEffect(const char* basename1 = "RUN72_Spatial_Beamoff_500_withlens_LD7
     
     leg->Draw();
   }
+
+  cout << "Peak shift : " << endl;
+  for (int i = 0; i < num_ca; i++){
+    Double_t error = TMath::Sqrt(mean1_err[i]*mean1_err[i] + mean2_err[i]*mean2_err[i]);
+    cout << "Ca" << std::round(ca_mass[i]) <<": "<< mean1[i]  - mean2[i] << " +/- "<<error <<" [mm]"<<endl;
+  }
+
   //--------------------------------------------------------------
   // 保存
   //--------------------------------------------------------------
