@@ -81,16 +81,18 @@ void LaserEffect(const char* basename1 = "RUN72_Spatial_Beamoff_500_withlens_LD7
   for (int i = 0; i < num_ca; i++) {
     funcgaus1[i] = new TF1(Form("func_%s",gr1[i]->GetName()),"gaus+[3]");
     funcgaus2[i] = new TF1(Form("func_%s",gr2[i]->GetName()),"gaus+[3]");
+    funcgaus1[i]->SetNpx(1000);
+    funcgaus2[i]->SetNpx(1000);
     funcgaus1[i]->SetParNames("A","Mean","Sigma","Baseline");
     funcgaus2[i]->SetParNames("A","Mean","Sigma","Baseline");
     funcgaus1[i]->SetParameters(gr_max*ca_abundance[i], 50., 10., 0.);
     funcgaus2[i]->SetParameters(gr_max*ca_abundance[i], 50., 10., 0.);
     funcgaus1[i]->SetParLimits(0,0.,1.e7);
     funcgaus1[i]->SetParLimits(1,30,60);
-    funcgaus1[i]->SetParLimits(2,1.,30.);
+    funcgaus1[i]->SetParLimits(2,1.,20.);
     funcgaus2[i]->SetParLimits(0,0.,1.e7);
-    funcgaus2[i]->SetParLimits(1,20,60);
-    funcgaus2[i]->SetParLimits(2,1.,30.);
+    funcgaus2[i]->SetParLimits(1,30,60);
+    funcgaus2[i]->SetParLimits(2,1.,20.);
 
     gr1[i]->SetLineColor(kBlack);
     gr1[i]->SetMarkerColor(kBlack);
