@@ -5,10 +5,13 @@
 
 namespace CaThermalDisplacement {
 namespace FitConfig {
-// Set false to fix temperature at fixedTemperature_K instead of fitting it.
+// Initial fit values. The fix* options hold the corresponding parameter at its initial value.
 // N and T are strongly correlated when both are free.
-constexpr bool fitTemperature = true;
-constexpr double fixedTemperature_K = 500.0;
+constexpr double initialTemperature_K = 500.0 + 273.15;
+constexpr double initialRate_photonsPerSecond = 1.4e7;
+constexpr double initialPeakCenter_mm = 47.46;
+constexpr bool fixTemperatureAtInitialValue = true;
+constexpr bool fixPeakCenterAtInitialValue = false;
 constexpr double minimumTemperature_K = 50.0;
 constexpr double maximumTemperature_K = 3000.0;
 } // namespace FitConfig

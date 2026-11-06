@@ -71,3 +71,20 @@ Also
 : <<'EOF'
 EOF
 can comment out the region between.
+
+## Isotope-specific laser-effect fit
+
+`LaserEffect.C` can apply the thermal displacement model to the with-laser graph of one selected calcium isotope. The other isotope graphs are fitted with the Gaussian model. The isotope selector accepts `40`, `42`, `44`, or `48`; use `0` to use Gaussian fits for every isotope.
+
+Run the macro from the run directory (for example, `RUN75`) after `run75.sh` has created the combined graph ROOT files. Pass the beam-off and beam-on basenames without directories, file extensions, or the `_CaGraphCombined.root` suffix:
+
+```bash
+cd RUN75
+beamoff=RUN75_Spatial_Beamoff_500_Xs0
+beamon=RUN75_Spatial_Beamon48_500_Xs0
+for isotope in 40 42 44 48; do
+    root -l -b -q "../LaserEffect.C(\"${beamoff}\",\"${beamon}\",${isotope})"
+done
+```
+
+The isotope mass is the third argument. Fit starting values are configured in `CaThermalDisplacementModel.h`: `initialTemperature_K`, `initialRate_photonsPerSecond`, and `initialPeakCenter_mm`. Temperature is fixed at its configured initial value when `fixTemperatureAtInitialValue` is `true`; set it to `false` to fit temperature. The peak center starts at `initialPeakCenter_mm` and is fixed there when `fixPeakCenterAtInitialValue` is `true`; set it to `false` to let the fit vary it. Results are written under `root/laser_effect/` and plots under `outputs/laser_effect/` in the run directory.

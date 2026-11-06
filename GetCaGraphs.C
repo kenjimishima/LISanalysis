@@ -255,7 +255,7 @@ void GetCaGraphs(const char* basename = "RUN72_Spatial_Beamoff_500_withlens_LD70
   for (int i = 0; i < num_ca; ++i) {
     gr[i] = new TGraphErrors(n, &yval[0], &counts[i][0], 0, &errors[i][0]);
     gr[i]->SetName(Form("gr_ca%0.0f",ca_mass[i]));
-    gr[i]->SetTitle(Form("%0.0fCa; YAG laser position [mm]; Peak count",ca_mass[i]));
+    gr[i]->SetTitle(Form("%0.0fCa; YAG laser position [mm]; Charge [pC]",ca_mass[i]));
     gr[i]->SetMarkerColor(colors[i]);
     gr[i]->SetLineColor(colors[i]);
     gr[i]->SetMarkerStyle(20);
