@@ -10,12 +10,12 @@ files=(
     RUN75_Spatial_Beamoff_500_Xs0_500mVscale.txt
     RUN75_Spatial_Beamon48_500_Xs0_1mVscale.txt
     RUN75_Spatial_Beamon48_500_Xs0_500mVscale.txt
-    RUN75_Spatial_Beamoff_500_Xsm10_1mVscale.txt
-    RUN75_Spatial_Beamoff_500_Xsm10_500mVscale.txt
-    RUN75_Spatial_Beamon48_500_Xsm5_1mVscale.txt
-    RUN75_Spatial_Beamon48_500_Xsm5_500mVscale.txt
     RUN75_Spatial_Beamoff_500_Xsm5_1mVscale.txt
     RUN75_Spatial_Beamoff_500_Xsm5_500mVscale.txt
+    RUN75_Spatial_Beamon48_500_Xsm5_1mVscale.txt
+    RUN75_Spatial_Beamon48_500_Xsm5_500mVscale.txt
+    RUN75_Spatial_Beamoff_500_Xsm10_1mVscale.txt
+    RUN75_Spatial_Beamoff_500_Xsm10_500mVscale.txt
     RUN75_Spatial_Beamon48_500_Xsm10_1mVscale.txt
     RUN75_Spatial_Beamon48_500_Xsm10_500mVscale.txt
 )
@@ -127,14 +127,17 @@ done
 f0="${files_comb[0]}"
 f1="${files_comb[1]}"
 root -l -b -q "../LaserEffect.C(\"$f0\",\"$f1\")"
+root -l -b -q "../LaserEffect.C(\"$f0\",\"$f1\",48)"
 
 f0="${files_comb[2]}"
 f1="${files_comb[3]}"
 root -l -b -q "../LaserEffect.C(\"$f0\",\"$f1\")"
+root -l -b -q "../LaserEffect.C(\"$f0\",\"$f1\",48)"
 
 f0="${files_comb[4]}"
 f1="${files_comb[5]}"
 root -l -b -q "../LaserEffect.C(\"$f0\",\"$f1\")"
+root -l -b -q "../LaserEffect.C(\"$f0\",\"$f1\",48)"
 
 : <<'EOF'
 EOF

@@ -26,7 +26,6 @@
 gStyle->SetOptFit(1111);
 gStyle->SetOptStat(1001111);
 
-
 Double_t A40Ca = 0.969;
 Double_t A42Ca = 0.00647;
 Double_t A44Ca = 0.0209;
@@ -50,6 +49,7 @@ Double_t impedance = 50.; //Input impedance [Ohm]
 
 Bool_t bConvertToCount = kFALSE; //true: convet voltage to count, false: use voltage [mV] 
 Bool_t bUseDefaultSigmaRegion = kTRUE; //true: Use default sigma to define the integral region, false: use fitting results 
+Int_t CaDisplacementFitting = 1; //0: Gaussian, 1: Detailed model, 2: Analytic model 
 Double_t PeakFitThreshold = 10.; //Use default value if the peak is less than this x sigma  
 Double_t SigmaSaturated = 1.5; //se this x def_sigma if the fitting sigma is more than. 
 Double_t PeakSaturated = 8.0; //Use larger dynamic range in case over this [pC]
